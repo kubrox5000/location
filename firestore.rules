@@ -1,0 +1,178 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {uid}
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required, email format)
+    //   - role: string (required, enum: ['admin', 'user'])
+    //
+    // Collection: cars
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required, 1-100 chars)
+    //   - brand: string (required, 1-50 chars)
+    //   - pricePerDay: number (required, positive)
+    //   - cities: list (required, strings)
+    //   - type: string (required, enum: ['SUV', 'Sedan', 'Economy', 'Luxury'])
+    //   - transmission: string (required, enum: ['Automatic', 'Manual'])
+    //   - fuelType: string (required, enum: ['Petrol', 'Diesel', 'Electric', 'Hybrid'])
+    //   - seats: number (optional, positive)
+    //   - doors: number (optional, positive)
+    //   - airConditioning: bool (optional)
+    //   - availability: map (optional)
+    //   - createdAt: string (required, ISO 8601)
+    //
+    // Collection: bookings
+    // Document ID: auto-generated
+    // Fields:
+    //   - carId: string (required)
+    //   - customerName: string (required, 1-100 chars)
+    //   - phone: string (required, 5-20 chars)
+    //   - city: string (required)
+    //   - pickupDate: string (required, ISO 8601)
+    //   - returnDate: string (required, ISO 8601)
+    //   - status: string (required, enum: ['Pending', 'Confirmed', 'Cancelled'])
+    //   - totalPrice: number (required, positive)
+    //   - createdAt: string (required, ISO 8601)
+    //
+    // Collection: cities
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required, 1-50 chars)
+    //
+    // Collection: settings
+    // Document ID: global
+    // Fields:
+    //   - email: string (optional, email format)
+    //   - phone: string (optional)
+    //   - whatsapp: string (optional)
+    //   - address: string (optional)
+    //   - addressAr: string (optional)
+    //   - updatedAt: string (required, ISO 8601)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          request.auth.token.email == "devhamada300@gmail.com"
+        );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['uid', 'email', 'role']) &&
+        data.uid == request.auth.uid &&
+        isValidEmail(data.email) &&
+        data.role in ['admin', 'user'];
+    }
+
+    function isValidCar(data) {
+      return hasOnlyAllowedFields(['name', 'brand', 'pricePerDay', 'cities', 'type', 'transmission', 'fuelType', 'seats', 'doors', 'airConditioning', 'availability', 'createdAt', 'images', 'id']) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+        data.brand is string && data.brand.size() >= 1 && data.brand.size() <= 50 &&
+        data.pricePerDay is number && data.pricePerDay > 0 &&
+        data.cities is list &&
+        data.type in ['SUV', 'Sedan', 'Economy', 'Luxury'] &&
+        data.transmission in ['Automatic', 'Manual'] &&
+        data.fuelType in ['Petrol', 'Diesel', 'Electric', 'Hybrid'] &&
+        isValidDateString(data.createdAt);
+    }
+
+    function isValidBooking(data) {
+      return hasOnlyAllowedFields(['carId', 'customerName', 'phone', 'city', 'pickupDate', 'returnDate', 'status', 'totalPrice', 'createdAt', 'id']) &&
+        data.carId is string &&
+        data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 100 &&
+        data.phone is string && data.phone.size() >= 5 && data.phone.size() <= 20 &&
+        data.city is string &&
+        isValidDateString(data.pickupDate) &&
+        isValidDateString(data.returnDate) &&
+        data.status in ['Pending', 'Confirmed', 'Cancelled'] &&
+        data.totalPrice is number && data.totalPrice > 0 &&
+        isValidDateString(data.createdAt);
+    }
+
+    function isValidCity(data) {
+      return hasOnlyAllowedFields(['name']) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 50;
+    }
+
+    function isValidSettings(data) {
+      return hasOnlyAllowedFields(['email', 'phone', 'whatsapp', 'address', 'addressAr', 'updatedAt', 'id']) &&
+        (!('email' in data) || isValidEmail(data.email)) &&
+        isValidDateString(data.updatedAt);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == 'user' || isAdmin());
+      allow update: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == resource.data.role || isAdmin());
+    }
+
+    match /cars/{carId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidCar(request.resource.data);
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isAdmin();
+      allow create: if isValidBooking(request.resource.data);
+      allow update: if isAdmin() && isValidBooking(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /cities/{cityId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidCity(request.resource.data);
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidSettings(request.resource.data);
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

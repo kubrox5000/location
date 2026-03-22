@@ -1,0 +1,7 @@
+{
+  "name": "Remix: DriveSelect - Premium Car Rental",
+  "description": "A modern, scalable car rental platform with a powerful admin dashboard, real-time booking, and WhatsApp integration.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

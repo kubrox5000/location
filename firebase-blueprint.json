@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "Car": {
+      "title": "Car",
+      "description": "A car available for rental",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "pricePerDay": { "type": "number" },
+        "cities": { "type": "array", "items": { "type": "string" } },
+        "type": { "type": "string", "enum": ["SUV", "Sedan", "Economy", "Luxury"] },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "transmission": { "type": "string", "enum": ["Automatic", "Manual"] },
+        "fuelType": { "type": "string", "enum": ["Petrol", "Diesel", "Electric", "Hybrid"] },
+        "seats": { "type": "number" },
+        "doors": { "type": "number" },
+        "airConditioning": { "type": "boolean" },
+        "availability": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "brand", "pricePerDay", "cities", "type", "transmission", "fuelType"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "A car rental booking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "carId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "phone": { "type": "string" },
+        "city": { "type": "string" },
+        "pickupDate": { "type": "string", "format": "date" },
+        "returnDate": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["Pending", "Confirmed", "Cancelled"] },
+        "totalPrice": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["carId", "customerName", "phone", "city", "pickupDate", "returnDate", "status", "totalPrice"]
+    },
+    "City": {
+      "title": "City",
+      "description": "A city where cars can be rented",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "address": { "type": "string" },
+        "addressAr": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "User": {
+      "title": "User",
+      "description": "Application user profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/cars": {
+      "schema": "Car",
+      "description": "Collection of available cars"
+    },
+    "/bookings": {
+      "schema": "Booking",
+      "description": "Collection of customer bookings"
+    },
+    "/cities": {
+      "schema": "City",
+      "description": "Collection of supported cities"
+    },
+    "/settings": {
+      "schema": "Settings",
+      "description": "Global settings document"
+    },
+    "/users": {
+      "schema": "User",
+      "description": "User profiles and roles"
+    }
+  }
+}
