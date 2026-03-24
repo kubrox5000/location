@@ -4,8 +4,8 @@ import { Users, Shield, Globe, Award, CheckCircle2 } from 'lucide-react';
 
 export const About = () => {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-center">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -37,7 +37,7 @@ export const About = () => {
           viewport={{ once: true }}
           className="relative"
         >
-          <div className="aspect-square overflow-hidden rounded-[40px] shadow-2xl">
+          <div className="aspect-[4/3] sm:aspect-square overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-2xl">
             <img
               src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=1000"
               alt="About Us"
@@ -45,7 +45,7 @@ export const About = () => {
               referrerPolicy="no-referrer"
             />
           </div>
-          <div className="absolute -bottom-10 -left-10 rounded-3xl bg-white p-8 shadow-xl border border-primary/10">
+          <div className="absolute -bottom-6 -left-4 sm:-bottom-10 sm:-left-10 rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-8 shadow-xl border border-primary/10">
             <div className="flex items-center gap-4">
               <div className="rounded-2xl bg-primary p-3 text-primary-foreground">
                 <Award size={24} />
@@ -59,7 +59,7 @@ export const About = () => {
         </motion.div>
       </div>
 
-      <div className="mt-32 grid grid-cols-1 gap-8 md:grid-cols-3">
+      <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
         {[
           { icon: Shield, title: 'Safety First', desc: 'Every vehicle undergoes a rigorous 100-point inspection before every rental.' },
           { icon: Users, title: 'Customer Centric', desc: 'Our support team is available 24/7 to ensure your journey is perfect.' },

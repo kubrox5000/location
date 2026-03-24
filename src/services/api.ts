@@ -92,6 +92,8 @@ export const settingsService = {
         whatsapp: '1234567890',
         address: '123 Luxury St, Dubai, UAE',
         addressAr: '123 شارع الفخامة، دبي، الإمارات',
+        logo: '',
+        favicon: '',
         updatedAt: new Date().toISOString(),
       };
       await setDoc(docRef, defaultSettings);

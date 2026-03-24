@@ -45,12 +45,15 @@ export const AdminLogin = () => {
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-md overflow-hidden rounded-3xl border border-primary/10 bg-white shadow-2xl"
       >
-        <div className="bg-primary p-8 text-center text-primary-foreground">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-primary shadow-xl">
-            <Lock size={32} />
+        <div className="bg-primary p-10 text-center text-primary-foreground relative">
+          <div className="absolute inset-0 bg-black/10" />
+          <div className="relative z-10">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[2rem] bg-white/10 text-white shadow-2xl backdrop-blur-md border border-white/20">
+              <Lock size={36} />
+            </div>
+            <h2 className="serif text-3xl font-black tracking-tight">Admin Portal</h2>
+            <p className="mt-2 text-sm font-medium opacity-60 uppercase tracking-[0.2em]">Secure Access</p>
           </div>
-          <h2 className="serif text-2xl font-light tracking-tight">Admin Portal</h2>
-          <p className="mt-2 text-sm opacity-60">Secure access for fleet management</p>
         </div>
 
         <div className="p-8 space-y-6 bg-white">

@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Save, Mail, Phone, MessageCircle, MapPin } from 'lucide-react';
+import { Save, Mail, Phone, MessageCircle, MapPin, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { settingsService } from '../services/api';
 import { Settings } from '../types';
 
 export const AdminSettings = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [settings, setSettings] = React.useState<Settings | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
@@ -34,6 +34,19 @@ export const AdminSettings = () => {
     try {
       await settingsService.update(settings);
       toast.success(t('admin.settings.success'));
+      
+      // Update favicon dynamically if changed
+      if (settings.favicon) {
+        const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+        if (link) {
+          link.href = settings.favicon;
+        } else {
+          const newLink = document.createElement('link');
+          newLink.rel = 'icon';
+          newLink.href = settings.favicon;
+          document.head.appendChild(newLink);
+        }
+      }
     } catch (error) {
       console.error('Failed to update settings:', error);
       toast.error(t('admin.settings.error'));
@@ -59,6 +72,50 @@ export const AdminSettings = () => {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {/* Logo URL */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <ImageIcon size={16} className="text-primary" />
+                {i18n.language === 'ar' ? 'رابط شعار الموقع (Logo)' : 'Website Logo URL'}
+              </label>
+              <input
+                type="url"
+                value={settings?.logo || ''}
+                onChange={(e) => setSettings(prev => prev ? { ...prev, logo: e.target.value } : null)}
+                placeholder="https://example.com/logo.png"
+                className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+            {settings?.logo && (
+              <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center">
+                <img src={settings.logo} alt="Logo Preview" className="max-h-12 object-contain" referrerPolicy="no-referrer" />
+              </div>
+            )}
+          </div>
+
+          {/* Favicon URL */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <ImageIcon size={16} className="text-primary" />
+                {i18n.language === 'ar' ? 'رابط أيقونة الموقع (Favicon)' : 'Website Favicon URL'}
+              </label>
+              <input
+                type="url"
+                value={settings?.favicon || ''}
+                onChange={(e) => setSettings(prev => prev ? { ...prev, favicon: e.target.value } : null)}
+                placeholder="https://example.com/favicon.ico"
+                className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+            {settings?.favicon && (
+              <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center">
+                <img src={settings.favicon} alt="Favicon Preview" className="h-8 w-8 object-contain" referrerPolicy="no-referrer" />
+              </div>
+            )}
+          </div>
+
           {/* Email */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-foreground">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Fuel, Gauge, MapPin, ArrowRight, DoorOpen, Snowflake, ChevronRight } from 'lucide-react';
+import { Users, Fuel, Gauge, MapPin, DoorOpen, Snowflake, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Car } from '../types';
 import { motion } from 'motion/react';
 
@@ -9,76 +10,82 @@ interface CarCardProps {
 }
 
 export const CarCard: React.FC<CarCardProps> = ({ car }) => {
+  const { t } = useTranslation();
+
+  const translatedType = t(`admin.fleet.options.types.${car.type.toLowerCase()}`);
+  const translatedTransmission = t(`admin.fleet.options.transmissions.${car.transmission.toLowerCase()}`);
+  const translatedFuel = t(`admin.fleet.options.fuels.${car.fuelType.toLowerCase()}`);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group relative flex flex-col overflow-hidden rounded-[2rem] bg-white transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 border border-primary/5"
+      className="group relative flex flex-col overflow-hidden rounded-[2rem] bg-white transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] border border-black/5 hover:border-primary/30"
     >
       {/* Image Container */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={car.images[0]}
           alt={car.name}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110 brightness-95 group-hover:brightness-100"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity duration-700 group-hover:opacity-40" />
         
         {/* Badges */}
-        <div className="absolute left-6 top-6 flex flex-col gap-2">
-          <span className="rounded-full bg-primary px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground backdrop-blur-md">
-            {car.type}
+        <div className="absolute inset-y-6 start-6 flex flex-col items-start gap-2">
+          <span className="rounded-full bg-black/10 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] text-foreground backdrop-blur-2xl border border-black/10 shadow-2xl">
+            {translatedType}
           </span>
         </div>
         
-        <div className="absolute bottom-6 left-6">
-          <p className="serif text-2xl font-light text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 translate-y-4">
-            ${car.pricePerDay}<span className="text-sm">/day</span>
+        <div className="absolute bottom-6 start-6">
+          <p className="serif text-2xl font-black text-white transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 translate-y-4">
+            ${car.pricePerDay}<span className="text-xs font-light opacity-60 italic"> {t('carDetails.perDay')}</span>
           </p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-8">
+      <div className="flex flex-1 flex-col p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{car.brand}</p>
-            <h3 className="serif mt-1 text-2xl font-light text-foreground">{car.name}</h3>
+          <div className="space-y-1">
+            <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">{car.brand}</p>
+            <h3 className="serif text-xl font-black tracking-tighter text-foreground leading-none">{car.name}</h3>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-primary/5 px-3 py-1 text-[10px] font-bold text-primary">
-            <MapPin size={12} />
+          <div className="flex items-center gap-2 rounded-full bg-black/5 px-3 py-1.5 text-[9px] font-black text-foreground/40 border border-black/5 backdrop-blur-md">
+            <MapPin size={10} className="text-primary" />
             {car.cities[0]}
           </div>
         </div>
 
         {/* Specs Grid */}
-        <div className="mt-8 grid grid-cols-2 gap-y-4 border-t border-primary/10 pt-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/5 text-primary">
+        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-black/5 pt-6">
+          <div className="flex items-center gap-3 group/spec">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
               <Users size={14} />
             </div>
-            <span className="text-xs font-medium text-foreground/60">{car.seats} Seats</span>
+            <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{car.seats} {t('carDetails.specs.seats')}</span>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/5 text-primary">
+          <div className="flex items-center gap-3 group/spec">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
               <Gauge size={14} />
             </div>
-            <span className="text-xs font-medium text-foreground/60">{car.transmission}</span>
+            <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{translatedTransmission}</span>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/5 text-primary">
+          <div className="flex items-center gap-3 group/spec">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
               <Fuel size={14} />
             </div>
-            <span className="text-xs font-medium text-foreground/60">{car.fuelType}</span>
+            <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{translatedFuel}</span>
           </div>
           {car.airConditioning && (
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/5 text-primary">
+            <div className="flex items-center gap-3 group/spec">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
                 <Snowflake size={14} />
               </div>
-              <span className="text-xs font-medium text-foreground/60">Climate Control</span>
+              <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{t('carDetails.specs.ac')}</span>
             </div>
           )}
         </div>
@@ -87,12 +94,11 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
         <div className="mt-auto pt-8">
           <Link
             to={`/car/${car.id}`}
-            className="group/btn flex w-full items-center justify-between rounded-2xl bg-primary/5 px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary border border-primary/10 transition-all hover:bg-primary hover:text-primary-foreground hover:border-primary active:scale-95"
+            className="group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-primary px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.3em] text-white transition-all hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98]"
           >
-            Reserve Now
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 transition-transform group-hover/btn:translate-x-1">
-              <ChevronRight size={14} />
-            </div>
+            <span className="relative z-10">{t('carDetails.reserveNow')}</span>
+            <ChevronRight size={16} className="relative z-10 transition-transform duration-500 group-hover/btn:translate-x-2 rtl:rotate-180 rtl:group-hover/btn:-translate-x-2" />
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
           </Link>
         </div>
       </div>

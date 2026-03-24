@@ -43,5 +43,7 @@ export interface Settings {
   whatsapp: string;
   address: string;
   addressAr: string;
+  logo?: string;
+  favicon?: string;
   updatedAt: string;
 }

@@ -4,7 +4,8 @@ import { motion } from 'motion/react';
 import { 
   Users, Fuel, Gauge, MapPin, Calendar, 
   ChevronLeft, MessageCircle, CreditCard, 
-  CheckCircle2, Info, DoorOpen, Snowflake
+  CheckCircle2, Info, DoorOpen, Snowflake,
+  Loader2
 } from 'lucide-react';
 import { carService, bookingService } from '../services/api';
 import { Car, Booking } from '../types';
@@ -78,13 +79,25 @@ export const CarDetails = () => {
     return dates;
   }, [bookings, car]);
 
-  if (loading) return <div className="p-20 text-center">{t('carDetails.loading')}</div>;
+  if (loading) return (
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-6">
+        <Loader2 size={48} className="animate-spin text-primary" />
+        <p className="text-xl font-black uppercase tracking-[0.4em] text-foreground/40">{t('carDetails.loading')}</p>
+      </div>
+    </div>
+  );
 
   if (!car) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h2 className="serif text-2xl font-light text-foreground">{t('carDetails.notFound')}</h2>
-        <button onClick={() => navigate('/cars')} className="mt-4 text-primary font-bold hover:underline">{t('carDetails.backToFleet')}</button>
+      <div className="flex min-h-screen flex-col items-center justify-center text-center bg-background px-6">
+        <h2 className="serif text-4xl font-black text-foreground tracking-tighter uppercase">{t('carDetails.notFound')}</h2>
+        <button 
+          onClick={() => navigate('/cars')} 
+          className="mt-8 rounded-2xl bg-primary px-10 py-5 text-xs font-black uppercase tracking-[0.3em] text-white shadow-2xl shadow-primary/40 transition-all hover:scale-105 active:scale-95"
+        >
+          {t('carDetails.backToFleet')}
+        </button>
       </div>
     );
   }
@@ -129,237 +142,254 @@ export const CarDetails = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-8 flex items-center gap-2 text-sm font-bold text-foreground/40 transition-colors hover:text-primary"
-      >
-        <ChevronLeft size={18} className="rtl:rotate-180" />
-        {t('carDetails.back')}
-      </button>
+    <div className="bg-background min-h-screen pt-24 pb-16">
+      <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-8 flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] text-foreground/40 transition-colors hover:text-primary"
+        >
+          <ChevronLeft size={20} className="rtl:rotate-180" />
+          {t('carDetails.back')}
+        </button>
 
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-        {/* Left: Images & Specs */}
-        <div className="space-y-8">
-          <div className="space-y-4">
-            <motion.div
-              key={activeImage}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="aspect-video overflow-hidden rounded-3xl border border-primary/10 shadow-lg"
-            >
-              <img
-                src={car.images[activeImage]}
-                alt={car.name}
-                className="h-full w-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </motion.div>
-            
-            {car.images.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto pb-2">
-                {car.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImage(idx)}
-                    className={`relative h-20 w-32 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
-                      activeImage === idx ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <img src={img} alt={`${car.name} ${idx}`} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3">
-            {[
-              { icon: Users, label: t('carDetails.specs.seats'), value: car.seats },
-              { icon: DoorOpen, label: t('carDetails.specs.doors'), value: car.doors },
-              { icon: Gauge, label: t('carDetails.specs.transmission'), value: car.transmission },
-              { icon: Fuel, label: t('carDetails.specs.fuel'), value: car.fuelType },
-              { icon: Snowflake, label: t('carDetails.specs.ac'), value: car.airConditioning ? t('carDetails.specs.yes') : t('carDetails.specs.no') },
-              { icon: MapPin, label: t('carDetails.specs.cities'), value: car.cities.join(', ') },
-            ].map((spec, idx) => (
-              <div key={idx} className="flex flex-col items-center rounded-2xl bg-primary/5 p-4 text-center">
-                <spec.icon size={20} className="mb-2 text-primary" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{spec.label}</span>
-                <span className="text-sm font-bold text-foreground">{spec.value}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-3xl bg-primary/5 p-8">
-            <h3 className="flex items-center gap-2 text-lg font-bold text-foreground">
-              <Info size={20} className="text-primary" />
-              {t('carDetails.description')}
-            </h3>
-            <p className="mt-4 text-foreground/60 leading-relaxed">
-              Experience the perfect blend of performance and luxury with the {car.brand} {car.name}. 
-              Whether you're planning a weekend getaway or a business trip, this {car.type} offers 
-              unmatched comfort and reliability. Features include advanced safety systems, 
-              premium audio, and climate control.
-            </p>
-            <ul className="mt-6 space-y-3">
-              {[
-                t('carDetails.features.insurance'),
-                t('carDetails.features.sanitized'),
-                t('carDetails.features.mileage'),
-                t('carDetails.features.cancellation')
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-center gap-2 text-sm font-medium text-foreground/60">
-                  <CheckCircle2 size={16} className="text-primary" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Right: Booking Card */}
-        <div className="lg:sticky lg:top-24 h-fit">
-          <div className="overflow-hidden rounded-3xl border border-primary/10 bg-white shadow-2xl">
-            <div className="bg-primary p-8 text-primary-foreground">
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">{t('carDetails.rentalPrice')}</p>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="serif text-4xl font-light">${car.pricePerDay}</span>
-                <span className="text-sm font-light opacity-60">{t('carDetails.perDay')}</span>
-              </div>
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+          {/* Left: Images & Specs */}
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <motion.div
+                key={activeImage}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="aspect-[4/3] sm:aspect-video overflow-hidden rounded-[3rem] border border-black/5 shadow-2xl shadow-black/10"
+              >
+                <img
+                  src={car.images[activeImage]}
+                  alt={car.name}
+                  className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </motion.div>
+              
+              {car.images.length > 1 && (
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                  {car.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImage(idx)}
+                      className={`relative h-24 w-40 flex-shrink-0 overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+                        activeImage === idx ? 'border-primary scale-105 shadow-xl shadow-primary/20' : 'border-transparent opacity-40 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={img} alt={`${car.name} ${idx}`} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="p-8">
-              {!bookingOption ? (
-                <div className="space-y-4">
-                  <h3 className="serif text-xl font-light text-foreground">{t('carDetails.chooseMethod')}</h3>
-                  <p className="text-sm text-foreground/60">{t('carDetails.methodDesc')}</p>
-                  
-                  <button
-                    onClick={() => setBookingOption('website')}
-                    className="flex w-full items-center justify-between rounded-2xl border-2 border-primary/5 p-4 transition-all hover:border-primary hover:bg-primary/5 group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="rounded-xl bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <CreditCard size={24} />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-bold text-foreground">{t('carDetails.bookWebsite')}</p>
-                        <p className="text-xs text-foreground/60">{t('carDetails.websiteDesc')}</p>
-                      </div>
-                    </div>
-                    <ChevronLeft size={20} className="rotate-180 text-foreground/20 group-hover:text-primary rtl:rotate-0" />
-                  </button>
-
-                  <button
-                    onClick={handleWhatsAppBooking}
-                    className="flex w-full items-center justify-between rounded-2xl border-2 border-primary/5 p-4 transition-all hover:border-primary hover:bg-primary/5 group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="rounded-xl bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <MessageCircle size={24} />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-bold text-foreground">{t('carDetails.bookWhatsapp')}</p>
-                        <p className="text-xs text-foreground/60">{t('carDetails.whatsappDesc')}</p>
-                      </div>
-                    </div>
-                    <ChevronLeft size={20} className="rotate-180 text-foreground/20 group-hover:text-primary rtl:rotate-0" />
-                  </button>
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
+              {[
+                { icon: Users, label: t('carDetails.specs.seats'), value: car.seats },
+                { icon: DoorOpen, label: t('carDetails.specs.doors'), value: car.doors },
+                { icon: Gauge, label: t('carDetails.specs.transmission'), value: t(`admin.fleet.options.transmissions.${car.transmission.toLowerCase()}`) },
+                { icon: Fuel, label: t('carDetails.specs.fuel'), value: t(`admin.fleet.options.fuels.${car.fuelType.toLowerCase()}`) },
+                { icon: Snowflake, label: t('carDetails.specs.ac'), value: car.airConditioning ? t('carDetails.specs.yes') : t('carDetails.specs.no') },
+                { icon: MapPin, label: t('carDetails.specs.cities'), value: car.cities.join(', ') },
+              ].map((spec, idx) => (
+                <div key={idx} className="group flex flex-col items-center rounded-[2rem] glass p-8 text-center border border-black/5 transition-all hover:bg-black/5 hover:border-primary/30">
+                  <div className="mb-4 rounded-2xl bg-primary/10 p-4 text-primary transition-transform group-hover:scale-110 group-hover:rotate-6">
+                    <spec.icon size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">{spec.label}</span>
+                  <span className="mt-2 text-sm font-bold text-foreground tracking-wide">{spec.value}</span>
                 </div>
-              ) : (
-                <form onSubmit={handleWebsiteBooking} className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="serif text-xl font-light text-foreground">{t('carDetails.bookingForm')}</h3>
-                    <button 
-                      type="button"
-                      onClick={() => setBookingOption(null)}
-                      className="text-xs font-bold text-primary hover:underline"
-                    >
-                      {t('carDetails.changeMethod')}
-                    </button>
-                  </div>
+              ))}
+            </div>
 
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{t('carDetails.fullName')}</label>
-                      <input
-                        required
-                        type="text"
-                        placeholder="John Doe"
-                        className="mt-1 w-full rounded-xl border-primary/10 bg-primary/5 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      />
+            <div className="rounded-[3rem] glass p-8 sm:p-10 border border-black/5 shadow-2xl shadow-black/10">
+              <h3 className="flex items-center gap-4 text-2xl font-black uppercase tracking-tighter text-foreground">
+                <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                  <Info size={24} />
+                </div>
+                {t('carDetails.description')}
+              </h3>
+              <p className="mt-6 text-lg font-light text-foreground/40 leading-relaxed">
+                Experience the perfect blend of performance and luxury with the {car.brand} {car.name}. 
+                Whether you're planning a weekend getaway or a business trip, this {car.type} offers 
+                unmatched comfort and reliability. Features include advanced safety systems, 
+                premium audio, and climate control.
+              </p>
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {[
+                  t('carDetails.features.insurance'),
+                  t('carDetails.features.sanitized'),
+                  t('carDetails.features.mileage'),
+                  t('carDetails.features.cancellation')
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-4 text-sm font-bold text-foreground/60 glass p-4 rounded-2xl border border-black/5">
+                    <div className="rounded-full bg-primary/20 p-1.5 text-primary">
+                      <CheckCircle2 size={16} />
                     </div>
-                    <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{t('carDetails.phone')}</label>
-                      <input
-                        required
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        className="mt-1 w-full rounded-xl border-primary/10 bg-primary/5 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Booking Card */}
+          <div className="lg:sticky lg:top-32 h-fit">
+            <div className="overflow-hidden rounded-[3rem] border border-black/5 glass shadow-2xl shadow-black/10">
+              <div className="bg-primary p-8 text-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <p className="text-[11px] font-black uppercase tracking-[0.4em] text-white/60">{t('carDetails.rentalPrice')}</p>
+                  <div className="mt-4 flex items-baseline gap-3">
+                    <span className="serif text-6xl font-black tracking-tighter">${car.pricePerDay}</span>
+                    <span className="text-sm font-bold uppercase tracking-widest opacity-60">{t('carDetails.perDay')}</span>
+                  </div>
+                </div>
+                <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10 blur-[80px]" />
+                <div className="absolute -left-12 -bottom-12 h-48 w-48 rounded-full bg-black/20 blur-[80px]" />
+              </div>
+
+              <div className="p-8">
+                {!bookingOption ? (
+                  <div className="space-y-10">
+                    <div className="space-y-3">
+                      <h3 className="serif text-3xl font-black text-foreground tracking-tighter uppercase">{t('carDetails.chooseMethod')}</h3>
+                      <p className="text-lg text-foreground/40 font-light leading-relaxed">{t('carDetails.methodDesc')}</p>
                     </div>
-                    <div>
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{t('carDetails.pickupCity')}</label>
-                      <select
-                        required
-                        className="mt-1 w-full rounded-xl border-primary/10 bg-primary/5 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    
+                    <div className="space-y-5">
+                      <button
+                        onClick={() => setBookingOption('website')}
+                        className="flex w-full items-center justify-between rounded-3xl border border-black/5 bg-black/5 p-6 transition-all hover:border-primary/50 hover:bg-black/10 group"
                       >
-                        {car.cities.map((city, idx) => (
-                          <option key={idx} value={city}>{city}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{t('carDetails.pickupDate')}</label>
-                        <DatePicker
-                          selected={formData.pickupDate}
-                          onChange={(date) => setFormData({ ...formData, pickupDate: date })}
-                          selectsStart
-                          startDate={formData.pickupDate}
-                          endDate={formData.returnDate}
-                          minDate={new Date()}
-                          excludeDates={excludedDates}
-                          placeholderText={t('carDetails.selectDate')}
-                          className="mt-1 w-full rounded-xl border-primary/10 bg-primary/5 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{t('carDetails.returnDate')}</label>
-                        <DatePicker
-                          selected={formData.returnDate}
-                          onChange={(date) => setFormData({ ...formData, returnDate: date })}
-                          selectsEnd
-                          startDate={formData.pickupDate}
-                          endDate={formData.returnDate}
-                          minDate={formData.pickupDate || new Date()}
-                          excludeDates={excludedDates}
-                          placeholderText={t('carDetails.selectDate')}
-                          className="mt-1 w-full rounded-xl border-primary/10 bg-primary/5 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-                          required
-                        />
-                      </div>
+                        <div className="flex items-center gap-6">
+                          <div className="rounded-2xl bg-black/5 p-4 text-primary shadow-2xl transition-all group-hover:bg-primary group-hover:text-white group-hover:scale-110">
+                            <CreditCard size={28} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-black text-sm text-foreground uppercase tracking-widest">{t('carDetails.bookWebsite')}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/20 mt-2">{t('carDetails.websiteDesc')}</p>
+                          </div>
+                        </div>
+                        <ChevronLeft size={24} className="rotate-180 text-foreground/10 group-hover:text-primary transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
+                      </button>
+
+                      <button
+                        onClick={handleWhatsAppBooking}
+                        className="flex w-full items-center justify-between rounded-3xl border border-black/5 bg-black/5 p-6 transition-all hover:border-primary/50 hover:bg-black/10 group"
+                      >
+                        <div className="flex items-center gap-6">
+                          <div className="rounded-2xl bg-black/5 p-4 text-primary shadow-2xl transition-all group-hover:bg-primary group-hover:text-white group-hover:scale-110">
+                            <MessageCircle size={28} />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-black text-sm text-foreground uppercase tracking-widest">{t('carDetails.bookWhatsapp')}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/20 mt-2">{t('carDetails.whatsappDesc')}</p>
+                          </div>
+                        </div>
+                        <ChevronLeft size={24} className="rotate-180 text-foreground/10 group-hover:text-primary transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
+                      </button>
                     </div>
                   </div>
+                ) : (
+                  <form onSubmit={handleWebsiteBooking} className="space-y-8">
+                    <div className="flex items-center justify-between">
+                      <h3 className="serif text-3xl font-black text-foreground tracking-tighter uppercase">{t('carDetails.bookingForm')}</h3>
+                      <button 
+                        type="button"
+                        onClick={() => setBookingOption(null)}
+                        className="text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors"
+                      >
+                        {t('carDetails.changeMethod')}
+                      </button>
+                    </div>
 
-                  <button
-                    type="submit"
-                    className="mt-6 w-full rounded-2xl bg-primary py-4 font-black text-primary-foreground shadow-xl transition-all hover:bg-primary/90 active:scale-95"
-                  >
-                    {t('carDetails.confirm')}
-                  </button>
-                  <p className="text-center text-[10px] text-foreground/30">
-                    {t('carDetails.terms')}
-                  </p>
-                </form>
-              )}
+                    <div className="space-y-6">
+                      <div className="group">
+                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 transition-colors group-focus-within:text-primary">{t('carDetails.fullName')}</label>
+                        <input
+                          required
+                          type="text"
+                          placeholder="John Doe"
+                          className="mt-3 w-full rounded-2xl border border-black/5 bg-black/5 px-6 py-5 text-sm font-bold text-foreground outline-none transition-all focus:bg-black/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 tracking-wide"
+                          value={formData.fullName}
+                          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        />
+                      </div>
+                      <div className="group">
+                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 transition-colors group-focus-within:text-primary">{t('carDetails.phone')}</label>
+                        <input
+                          required
+                          type="tel"
+                          placeholder="+1 (555) 000-0000"
+                          className="mt-3 w-full rounded-2xl border border-black/5 bg-black/5 px-6 py-5 text-sm font-bold text-foreground outline-none transition-all focus:bg-black/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 tracking-wide"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        />
+                      </div>
+                      <div className="group">
+                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 transition-colors group-focus-within:text-primary">{t('carDetails.pickupCity')}</label>
+                        <select
+                          required
+                          className="mt-3 w-full rounded-2xl border border-black/5 bg-black/5 px-6 py-5 text-sm font-bold text-foreground outline-none transition-all focus:bg-black/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 appearance-none cursor-pointer tracking-wide"
+                          value={formData.city}
+                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        >
+                          {car.cities.map((city, idx) => (
+                            <option key={idx} value={city} className="bg-white text-foreground">{city}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="group">
+                          <label className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 transition-colors group-focus-within:text-primary">{t('carDetails.pickupDate')}</label>
+                          <DatePicker
+                            selected={formData.pickupDate}
+                            onChange={(date) => setFormData({ ...formData, pickupDate: date })}
+                            selectsStart
+                            startDate={formData.pickupDate}
+                            endDate={formData.returnDate}
+                            minDate={new Date()}
+                            excludeDates={excludedDates}
+                            placeholderText={t('carDetails.selectDate')}
+                            className="mt-3 w-full rounded-2xl border border-black/5 bg-black/5 px-6 py-5 text-sm font-bold text-foreground outline-none transition-all focus:bg-black/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 cursor-pointer tracking-wide [color-scheme:light]"
+                            required
+                          />
+                        </div>
+                        <div className="group">
+                          <label className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20 transition-colors group-focus-within:text-primary">{t('carDetails.returnDate')}</label>
+                          <DatePicker
+                            selected={formData.returnDate}
+                            onChange={(date) => setFormData({ ...formData, returnDate: date })}
+                            selectsEnd
+                            startDate={formData.pickupDate}
+                            endDate={formData.returnDate}
+                            minDate={formData.pickupDate || new Date()}
+                            excludeDates={excludedDates}
+                            placeholderText={t('carDetails.selectDate')}
+                            className="mt-3 w-full rounded-2xl border border-black/5 bg-black/5 px-6 py-5 text-sm font-bold text-foreground outline-none transition-all focus:bg-black/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 cursor-pointer tracking-wide [color-scheme:light]"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="group/btn relative mt-10 w-full overflow-hidden rounded-2xl bg-primary py-6 text-xs font-black uppercase tracking-[0.3em] text-white shadow-2xl shadow-primary/40 transition-all hover:shadow-primary/60 active:scale-[0.98]"
+                    >
+                      <span className="relative z-10">{t('carDetails.confirm')}</span>
+                      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
+                    </button>
+                    <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">
+                      {t('carDetails.terms')}
+                    </p>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </div>

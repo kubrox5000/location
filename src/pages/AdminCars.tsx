@@ -559,7 +559,7 @@ export const AdminCars = () => {
           border: none;
         }
         .availability-picker-container .react-datepicker__day--highlighted.blocked-date {
-          background-color: #947c44 !important;
+          background-color: #d97706 !important;
           color: white !important;
           border-radius: 50%;
         }

@@ -207,6 +207,7 @@ const resources = {
           title: 'Experience Pure Freedom.',
           subtitle: 'Curated luxury fleet for those who demand excellence. Your journey deserves nothing less than perfection.',
           cta: 'Start Journey',
+          findCar: 'Find Car',
           story: 'Our Story',
         },
         trusted: 'Trusted by global travelers',
@@ -220,6 +221,13 @@ const resources = {
           title: 'Hand-picked Masterpieces',
           subtitle: 'Explore our exclusive range of high-performance vehicles, from timeless classics to the latest electric innovations.',
           cta: 'Explore Fleet',
+        },
+        process: {
+          tag: 'Process',
+          title: 'How to Book Your Ride',
+          step1: { title: 'Find Your Car', desc: 'Browse our extensive fleet of premium vehicles.' },
+          step2: { title: 'Select Dates', desc: 'Choose your pickup and return dates easily.' },
+          step3: { title: 'Book & Drive', desc: 'Complete your booking and start your adventure.' },
         },
         experience: {
           tag: 'Why DriveSelect',
@@ -255,8 +263,8 @@ const resources = {
       carDetails: {
         back: 'Back',
         notFound: 'Car not found',
+        loading: 'Loading Details',
         backToFleet: 'Back to Fleet',
-        loading: 'Loading car details...',
         specs: {
           seats: 'Seats',
           doors: 'Doors',
@@ -291,6 +299,7 @@ const resources = {
         returnDate: 'Return Date',
         selectDate: 'Select date',
         confirm: 'Confirm Reservation',
+        reserveNow: 'Reserve Now',
         terms: 'By clicking confirm, you agree to our terms of service and privacy policy.',
         success: 'Booking submitted successfully! We will contact you soon.',
         errorDates: 'Return date must be after pickup date',
@@ -584,6 +593,7 @@ const resources = {
           title: 'تجربة الحرية المطلقة.',
           subtitle: 'أسطول فاخر منسق لمن يطلب التميز. رحلتك لا تستحق أقل من الكمال.',
           cta: 'ابدأ الرحلة',
+          findCar: 'البحث عن سيارة',
           story: 'قصتنا',
         },
         trusted: 'موثوق به من قبل المسافرين العالميين',
@@ -597,6 +607,13 @@ const resources = {
           title: 'روائع مختارة بعناية',
           subtitle: 'استكشف مجموعتنا الحصرية من السيارات عالية الأداء، من الكلاسيكيات الخالدة إلى أحدث الابتكارات الكهربائية.',
           cta: 'استكشف الأسطول',
+        },
+        process: {
+          tag: 'العملية',
+          title: 'كيفية حجز رحلتك',
+          step1: { title: 'ابحث عن سيارتك', desc: 'تصفح أسطولنا الواسع من المركبات المتميزة.' },
+          step2: { title: 'اختر التواريخ', desc: 'اختر تواريخ الاستلام والعودة بسهولة.' },
+          step3: { title: 'احجز وانطلق', desc: 'أكمل حجزك وابدأ مغامرتك على الطريق.' },
         },
         experience: {
           tag: 'لماذا درايف سيلكت',
@@ -632,8 +649,8 @@ const resources = {
       carDetails: {
         back: 'رجوع',
         notFound: 'السيارة غير موجودة',
+        loading: 'جاري تحميل التفاصيل',
         backToFleet: 'العودة إلى الأسطول',
-        loading: 'جاري تحميل تفاصيل السيارة...',
         specs: {
           seats: 'مقاعد',
           doors: 'أبواب',
@@ -668,6 +685,7 @@ const resources = {
         returnDate: 'تاريخ العودة',
         selectDate: 'اختر التاريخ',
         confirm: 'تأكيد الحجز',
+        reserveNow: 'احجز الآن',
         terms: 'بالنقر على تأكيد، فإنك توافق على شروط الخدمة وسياسة الخصوصية الخاصة بنا.',
         success: 'تم تقديم طلب الحجز بنجاح! سنتصل بك قريباً.',
         errorDates: 'يجب أن يكون تاريخ العودة بعد تاريخ الاستلام',
@@ -959,8 +977,9 @@ const resources = {
         hero: {
           tag: 'L\'Art de la Mobilité',
           title: 'Vivez la Liberté Pure.',
-          subtitle: 'Une flotte de luxe sélectionnée pour ceux qui exigent l\'excellence. Votre voyage ne mérite rien de moins que la perfection.',
+          subtitle: '',
           cta: 'Commencer le Voyage',
+          findCar: 'Trouver une Voiture',
           story: 'Notre Histoire',
         },
         trusted: 'Approuvé par des voyageurs du monde entier',
@@ -974,6 +993,13 @@ const resources = {
           title: 'Chefs-d\'œuvre Sélectionnés',
           subtitle: 'Explorez notre gamme exclusive de véhicules haute performance, des classiques intemporels aux dernières innovations électriques.',
           cta: 'Explorer la Flotte',
+        },
+        process: {
+          tag: 'Processus',
+          title: 'Comment Réserver Votre Trajet',
+          step1: { title: 'Trouvez Votre Voiture', desc: 'Parcourez notre vaste flotte de véhicules premium.' },
+          step2: { title: 'Sélectionnez les Dates', desc: 'Choisissez facilement vos dates de prise en charge et de retour.' },
+          step3: { title: 'Réservez & Roulez', desc: 'Complétez votre réservation et commencez votre aventure.' },
         },
         experience: {
           tag: 'Pourquoi DriveSelect',
@@ -1009,8 +1035,8 @@ const resources = {
       carDetails: {
         back: 'Retour',
         notFound: 'Voiture non trouvée',
+        loading: 'Chargement des Détails',
         backToFleet: 'Retour à la Flotte',
-        loading: 'Chargement des détails...',
         specs: {
           seats: 'Sièges',
           doors: 'Portes',
@@ -1045,6 +1071,7 @@ const resources = {
         returnDate: 'Date de Retour',
         selectDate: 'Sélectionner une date',
         confirm: 'Confirmer la Réservation',
+        reserveNow: 'Réserver Maintenant',
         terms: 'En cliquant sur confirmer, vous acceptez nos conditions d\'utilisation et notre politique de confidentialité.',
         success: 'Réservation soumise avec succès ! Nous vous contacterons bientôt.',
         errorDates: 'La date de retour doit être après la date de prise en charge',
@@ -1104,7 +1131,7 @@ const resources = {
         contactSupport: 'Contacter le Support',
       },
       footer: {
-        tagline: 'Une flotte de luxe sélectionnée pour ceux qui exigent l\'excellence. Découvrez le confort, le style et la fiabilité avec notre service premium.',
+        tagline: '',
         company: 'Entreprise',
         services: 'Services',
         contact: 'Contact',
@@ -1142,6 +1169,10 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
+    detection: {
+      order: ['localStorage', 'cookie', 'htmlTag', 'path', 'subdomain'],
+      caches: ['localStorage', 'cookie'],
+    },
     interpolation: {
       escapeValue: false,
     },

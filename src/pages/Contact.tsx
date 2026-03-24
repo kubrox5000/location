@@ -34,8 +34,8 @@ export const Contact = () => {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 gap-16 lg:grid-cols-2">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         <div className="rtl:text-right">
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">{t('nav.contact')}</span>
           <h1 className="serif mt-4 text-5xl font-light tracking-tight text-foreground">Get in Touch.</h1>
@@ -80,7 +80,7 @@ export const Contact = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[40px] border border-primary/10 bg-white p-10 shadow-2xl"
+          className="rounded-[32px] sm:rounded-[40px] border border-primary/10 bg-white p-6 sm:p-10 shadow-2xl"
         >
           <h2 className="serif text-2xl font-light text-foreground">Send a Message</h2>
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -111,6 +111,27 @@ export const Contact = () => {
             </button>
           </form>
         </motion.div>
+      </div>
+
+      {/* Map Section */}
+      <div className="mt-24">
+        <div className="text-center mb-12">
+          <h2 className="serif text-4xl font-light text-foreground">
+            {i18n.language === 'ar' ? 'موقعنا في الخريطة' : 'Visit Our Office'}
+          </h2>
+        </div>
+        <div className="relative h-[450px] w-full overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-2xl border border-primary/10">
+          <iframe 
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(i18n.language === 'ar' ? (settings?.addressAr || 'دبي') : (settings?.address || 'Dubai'))}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+            width="100%" 
+            height="100%" 
+            style={{ border: 0 }} 
+            allowFullScreen={true} 
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Our Location"
+          ></iframe>
+        </div>
       </div>
     </div>
   );

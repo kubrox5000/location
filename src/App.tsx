@@ -64,6 +64,19 @@ const AppContent = () => {
       try {
         const data = await settingsService.get();
         setSettings(data);
+        
+        // Update favicon dynamically
+        if (data.favicon) {
+          const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+          if (link) {
+            link.href = data.favicon;
+          } else {
+            const newLink = document.createElement('link');
+            newLink.rel = 'icon';
+            newLink.href = data.favicon;
+            document.head.appendChild(newLink);
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
@@ -112,7 +125,7 @@ const AppContent = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
+      <Navbar settings={settings} />
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -130,11 +143,11 @@ const AppContent = () => {
       {/* Global WhatsApp Button */}
       <button
         onClick={handleWhatsApp}
-        className="fixed bottom-8 right-8 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white shadow-2xl transition-all hover:scale-110 hover:bg-emerald-600 active:scale-95"
+        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-2xl transition-all hover:scale-110 hover:bg-emerald-600 active:scale-95"
         title="Chat with us"
       >
-        <MessageCircle size={32} />
-        <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold">1</span>
+        <MessageCircle size={24} />
+        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold">1</span>
       </button>
     </div>
   );

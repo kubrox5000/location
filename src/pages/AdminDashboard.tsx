@@ -179,7 +179,7 @@ export const AdminDashboard = () => {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-0 z-20 mt-2 w-56 rounded-3xl border border-primary/10 bg-white p-2 shadow-xl"
+                  className="absolute end-0 z-20 mt-2 w-56 rounded-3xl border border-primary/10 bg-white p-2 shadow-xl"
                 >
                   <button 
                     onClick={() => { setTimeRange('day'); setIsFilterOpen(false); }}
@@ -235,98 +235,102 @@ export const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="rounded-3xl border border-primary/10 bg-white p-6 shadow-sm"
+            className="group rounded-[2rem] border border-primary/5 bg-white p-6 shadow-sm transition-all hover:shadow-xl hover:shadow-primary/5"
           >
             <div className="flex items-center justify-between">
-              <div className={`rounded-2xl ${stat.color} p-3 text-primary-foreground shadow-lg shadow-primary/20`}>
+              <div className={`rounded-2xl ${stat.color} p-3 text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
                 <stat.icon size={24} />
               </div>
-              <div className="flex items-center gap-1 text-xs font-bold text-primary">
-                <TrendingUp size={14} />
+              <div className="flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-full">
+                <TrendingUp size={12} />
                 +12%
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{stat.label}</p>
-              <p className="serif text-3xl font-light text-foreground">{stat.value}</p>
+            <div className="mt-6">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/20">{stat.label}</p>
+              <p className="serif mt-1 text-3xl font-light text-foreground">{stat.value}</p>
             </div>
           </motion.div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-3xl border border-primary/10 bg-white p-8 shadow-sm">
-          <h3 className="serif text-lg font-light text-foreground mb-6">
-            {timeRange === 'day' ? t('admin.dashboard.today') : 
-             timeRange === 'week' ? t('admin.dashboard.thisWeek') : 
-             timeRange === 'month' ? t('admin.dashboard.thisMonth') : 
-             t('admin.dashboard.lastDays', { days: customDays })} {t('admin.dashboard.charts.bookings')}
-          </h3>
+        <div className="rounded-[2.5rem] border border-primary/5 bg-white p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="serif text-xl font-light text-foreground">
+              {timeRange === 'day' ? t('admin.dashboard.today') : 
+               timeRange === 'week' ? t('admin.dashboard.thisWeek') : 
+               timeRange === 'month' ? t('admin.dashboard.thisMonth') : 
+               t('admin.dashboard.lastDays', { days: customDays })} {t('admin.dashboard.charts.bookings')}
+            </h3>
+          </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={dynamicData}>
                 <defs>
                   <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#947c44" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#947c44" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f9fafb" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#111827', opacity: 0.3 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#111827', opacity: 0.3 }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#0f172a', opacity: 0.3 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#0f172a', opacity: 0.3 }} />
                 <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: '1px solid rgba(148, 124, 68, 0.1)', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
                 />
-                <Area type="monotone" dataKey="bookings" stroke="#947c44" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" />
+                <Area type="monotone" dataKey="bookings" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorBookings)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-primary/10 bg-white p-8 shadow-sm">
-          <h3 className="serif text-lg font-light text-foreground mb-6">
-            {timeRange === 'day' ? t('admin.dashboard.today') : 
-             timeRange === 'week' ? t('admin.dashboard.thisWeek') : 
-             timeRange === 'month' ? t('admin.dashboard.thisMonth') : 
-             t('admin.dashboard.lastDays', { days: customDays })} {t('admin.dashboard.charts.earnings')}
-          </h3>
+        <div className="rounded-[2.5rem] border border-primary/5 bg-white p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="serif text-xl font-light text-foreground">
+              {timeRange === 'day' ? t('admin.dashboard.today') : 
+               timeRange === 'week' ? t('admin.dashboard.thisWeek') : 
+               timeRange === 'month' ? t('admin.dashboard.thisMonth') : 
+               t('admin.dashboard.lastDays', { days: customDays })} {t('admin.dashboard.charts.earnings')}
+            </h3>
+          </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dynamicData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f9fafb" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#111827', opacity: 0.3 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#111827', opacity: 0.3 }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#0f172a', opacity: 0.3 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#0f172a', opacity: 0.3 }} />
                 <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: '1px solid rgba(148, 124, 68, 0.1)', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
-                  cursor={{ fill: '#f9fafb' }}
+                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+                  cursor={{ fill: '#f8fafc' }}
                 />
-                <Bar dataKey="earnings" fill="#947c44" radius={[6, 6, 0, 0]} barSize={40} />
+                <Bar dataKey="earnings" fill="#10b981" radius={[8, 8, 0, 0]} barSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-primary/10 bg-white p-8 shadow-sm lg:col-span-2">
-          <h3 className="serif text-lg font-light text-foreground mb-6">{t('admin.dashboard.recentBookings')}</h3>
-          <div className="space-y-4">
+        <div className="rounded-[2.5rem] border border-primary/5 bg-white p-8 shadow-sm lg:col-span-2">
+          <h3 className="serif text-xl font-light text-foreground mb-8">{t('admin.dashboard.recentBookings')}</h3>
+          <div className="grid grid-cols-1 gap-4">
             {bookings.slice(0, 5).map((booking, idx) => {
               const car = cars.find(c => c.id === booking.carId);
               return (
-                <div key={idx} className="flex items-center justify-between rounded-2xl border border-primary/5 p-4 bg-primary/5">
+                <div key={idx} className="group flex items-center justify-between rounded-2xl border border-transparent p-4 transition-all hover:bg-secondary/50 hover:border-primary/5">
                   <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                    <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center font-bold text-primary transition-transform group-hover:scale-110">
                       {booking.customerName[0]}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-foreground">{booking.customerName}</p>
-                      <p className="text-xs text-foreground/60 font-light">{car ? `${car.brand} ${car.name}` : t('admin.fleet.unknownCar')} • {booking.city}</p>
+                      <p className="text-xs text-foreground/40 font-light">{car ? `${car.brand} ${car.name}` : t('admin.fleet.unknownCar')} • {booking.city}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-foreground">{booking.pickupDate}</p>
-                    <span className={`text-[10px] font-bold uppercase tracking-wider ${
-                      booking.status === 'Confirmed' ? 'text-primary' : 
-                      booking.status === 'Pending' ? 'text-primary/60' : 'text-red-500'
+                    <span className={`mt-1 inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                      booking.status === 'Confirmed' ? 'bg-primary/10 text-primary' : 
+                      booking.status === 'Pending' ? 'bg-accent/10 text-accent' : 'bg-red-50 text-red-500'
                     }`}>
                       {booking.status === 'Confirmed' ? t('admin.bookings.status.confirmed') : 
                        booking.status === 'Pending' ? t('admin.bookings.status.pending') : t('admin.bookings.status.cancelled')}
@@ -336,35 +340,43 @@ export const AdminDashboard = () => {
               );
             })}
             {bookings.length === 0 && (
-              <p className="text-center text-foreground/30 py-4 text-sm">{t('admin.dashboard.noBookings')}</p>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="rounded-full bg-secondary p-4 text-foreground/20 mb-4">
+                  <Calendar size={32} />
+                </div>
+                <p className="text-sm text-foreground/30">{t('admin.dashboard.noBookings')}</p>
+              </div>
             )}
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-3xl border border-primary/10 bg-white p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="serif text-lg font-light text-foreground">{t('admin.dashboard.availableToday')}</h3>
+        <div className="rounded-[2.5rem] border border-primary/5 bg-white p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="serif text-xl font-light text-foreground">{t('admin.dashboard.availableToday')}</h3>
             <button 
               onClick={() => window.location.href = '/admin/available-cars'}
-              className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
+              className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors"
             >
               {t('admin.dashboard.viewAll')}
+              <ChevronDown size={14} className="-rotate-90 transition-transform group-hover:translate-x-1 rtl:rotate-90 rtl:group-hover:-translate-x-1" />
             </button>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {availableCarsToday.slice(0, 4).map((car) => (
-              <div key={car.id} className="flex items-center gap-3 rounded-2xl border border-primary/5 p-3 bg-primary/5">
-                <img src={car.images[0]} alt={car.name} className="h-10 w-16 rounded-lg object-cover" referrerPolicy="no-referrer" />
+              <div key={car.id} className="group flex items-center gap-4 rounded-2xl border border-transparent p-3 transition-all hover:bg-secondary/50 hover:border-primary/5">
+                <div className="relative h-12 w-20 overflow-hidden rounded-xl">
+                  <img src={car.images[0]} alt={car.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" referrerPolicy="no-referrer" />
+                </div>
                 <div>
                   <p className="text-xs font-bold text-foreground">{car.brand} {car.name}</p>
-                  <p className="text-[10px] text-primary font-bold uppercase tracking-widest">{t('admin.bookings.available')}</p>
+                  <p className="text-[10px] text-primary font-bold uppercase tracking-widest mt-0.5">{t('admin.bookings.available')}</p>
                 </div>
               </div>
             ))}
             {availableCarsToday.length === 0 && (
-              <p className="col-span-full text-center text-xs text-foreground/30 py-4">{t('admin.dashboard.noAvailable')}</p>
+              <p className="col-span-full text-center text-xs text-foreground/30 py-8">{t('admin.dashboard.noAvailable')}</p>
             )}
           </div>
         </div>
