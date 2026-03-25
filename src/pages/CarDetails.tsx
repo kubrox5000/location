@@ -282,34 +282,34 @@ export const CarDetails = () => {
                     <div className="space-y-5">
                       <button
                         onClick={() => setBookingOption('website')}
-                        className="flex w-full items-center justify-between rounded-3xl border border-black/5 bg-black/5 p-6 transition-all hover:border-primary/50 hover:bg-black/10 group"
+                        className="flex w-full items-center justify-between rounded-3xl bg-primary p-6 transition-all hover:bg-primary/90 group shadow-xl shadow-primary/20 active:scale-[0.98]"
                       >
                         <div className="flex items-center gap-6">
-                          <div className="rounded-2xl bg-black/5 p-4 text-primary shadow-2xl transition-all group-hover:bg-primary group-hover:text-white group-hover:scale-110">
+                          <div className="rounded-2xl bg-white/20 p-4 text-white shadow-inner transition-all group-hover:scale-110 group-hover:bg-white/30">
                             <CreditCard size={28} />
                           </div>
                           <div className="text-left">
-                            <p className="font-black text-sm text-foreground uppercase tracking-widest">{t('carDetails.bookWebsite')}</p>
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/20 mt-2">{t('carDetails.websiteDesc')}</p>
+                            <p className="font-black text-sm text-white uppercase tracking-widest">{t('carDetails.bookWebsite')}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/60 mt-2 font-bold">{t('carDetails.websiteDesc')}</p>
                           </div>
                         </div>
-                        <ChevronLeft size={24} className="rotate-180 text-foreground/10 group-hover:text-primary transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
+                        <ChevronLeft size={24} className="rotate-180 text-white/40 group-hover:text-white transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
                       </button>
 
                       <button
                         onClick={handleWhatsAppBooking}
-                        className="flex w-full items-center justify-between rounded-3xl border border-black/5 bg-black/5 p-6 transition-all hover:border-primary/50 hover:bg-black/10 group"
+                        className="flex w-full items-center justify-between rounded-3xl bg-primary p-6 transition-all hover:bg-primary/90 group shadow-xl shadow-primary/20 active:scale-[0.98]"
                       >
                         <div className="flex items-center gap-6">
-                          <div className="rounded-2xl bg-black/5 p-4 text-primary shadow-2xl transition-all group-hover:bg-primary group-hover:text-white group-hover:scale-110">
+                          <div className="rounded-2xl bg-white/20 p-4 text-white shadow-inner transition-all group-hover:scale-110 group-hover:bg-white/30">
                             <MessageCircle size={28} />
                           </div>
                           <div className="text-left">
-                            <p className="font-black text-sm text-foreground uppercase tracking-widest">{t('carDetails.bookWhatsapp')}</p>
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/20 mt-2">{t('carDetails.whatsappDesc')}</p>
+                            <p className="font-black text-sm text-white uppercase tracking-widest">{t('carDetails.bookWhatsapp')}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/60 mt-2 font-bold">{t('carDetails.whatsappDesc')}</p>
                           </div>
                         </div>
-                        <ChevronLeft size={24} className="rotate-180 text-foreground/10 group-hover:text-primary transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
+                        <ChevronLeft size={24} className="rotate-180 text-white/40 group-hover:text-white transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
                       </button>
                     </div>
                   </div>

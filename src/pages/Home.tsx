@@ -313,7 +313,7 @@ export const Home = () => {
               { icon: Zap, title: t('home.process.step3.title'), desc: t('home.process.step3.desc') }
             ].map((step, idx) => (
               <div key={idx} className="relative group text-center">
-                <div className="mb-10 mx-auto flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-primary text-white shadow-2xl shadow-primary/20 border border-primary/50 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
+                <div className="mb-10 mx-auto flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-primary/10 text-primary shadow-2xl shadow-primary/5 border border-primary/20 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
                   <step.icon size={36} />
                 </div>
                 <h4 className="text-2xl font-black text-foreground mb-6 tracking-tight">{step.title}</h4>
@@ -349,7 +349,7 @@ export const Home = () => {
           <div className="mt-16 space-y-12">
             {(t('home.experience.steps', { returnObjects: true }) as any[]).map((item, idx) => (
               <div key={idx} className="flex gap-8 rtl:flex-row-reverse group">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-sm font-black text-white shadow-lg shadow-primary/20 transition-all group-hover:scale-110">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-sm font-black text-primary shadow-lg shadow-primary/5 transition-all group-hover:scale-110">
                   0{idx + 1}
                 </div>
                 <div>

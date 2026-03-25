@@ -6,7 +6,7 @@
   --font-serif: "Playfair Display", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
-  --color-primary: #10b981;
+  --color-primary: #22c55e;
   --color-primary-foreground: #ffffff;
   --color-secondary: #f8fafc;
   --color-secondary-foreground: #0f172a;
@@ -22,7 +22,7 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
-  --primary: #10b981;
+  --primary: #22c55e;
   --primary-foreground: #ffffff;
   --secondary: #f8fafc;
   --secondary-foreground: #0f172a;
@@ -32,7 +32,7 @@
   --destructive-foreground: #ffffff;
   --border: rgba(0, 0, 0, 0.05);
   --input: #ffffff;
-  --ring: #10b981;
+  --ring: #22c55e;
   --radius: 1.5rem;
 }
 

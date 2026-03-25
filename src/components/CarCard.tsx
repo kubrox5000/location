@@ -77,26 +77,26 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
         {/* Specs Grid */}
         <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-black/5 pt-6">
           <div className="flex items-center gap-3 group/spec">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-lg shadow-primary/5 transition-transform duration-500 group-hover/spec:scale-110">
               <Users size={16} />
             </div>
             <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{car.seats} {t('carDetails.specs.seats')}</span>
           </div>
           <div className="flex items-center gap-3 group/spec">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-lg shadow-primary/5 transition-transform duration-500 group-hover/spec:scale-110">
               <Gauge size={16} />
             </div>
             <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{translatedTransmission}</span>
           </div>
           <div className="flex items-center gap-3 group/spec">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-lg shadow-primary/5 transition-transform duration-500 group-hover/spec:scale-110">
               <Fuel size={16} />
             </div>
             <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{translatedFuel}</span>
           </div>
           {car.airConditioning && (
             <div className="flex items-center gap-3 group/spec">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-lg shadow-primary/5 transition-transform duration-500 group-hover/spec:scale-110">
                 <Snowflake size={16} />
               </div>
               <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{t('carDetails.specs.ac')}</span>
