@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowRight, Star, Shield, Clock, Zap, ChevronRight, Play, Search, Calendar, ChevronLeft } from 'lucide-react';
+import { ArrowRight, Star, Shield, Clock, Zap, ChevronRight, Play, Search, Calendar, ChevronLeft, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { SearchForm } from '../components/SearchForm';
 import { CarCard } from '../components/CarCard';
@@ -128,17 +128,18 @@ export const Home = () => {
   return (
     <div className="flex flex-col bg-background">
       {/* Hero Section - Editorial Style */}
-      <section className="relative min-h-[700px] sm:min-h-screen overflow-hidden bg-background">
+      <section className="relative min-h-screen overflow-hidden bg-background">
         <div className="absolute inset-0 z-0">
           <motion.img
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 2, ease: "easeOut" }}
-            src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=2000"
+            src={settings?.heroImage || "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=2000"}
             alt="Hero Background"
             className="h-full w-full object-cover object-center"
             referrerPolicy="no-referrer"
           />
+          <div className="absolute inset-0 bg-black/10" />
         </div>
 
         <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-20 text-center text-foreground">
@@ -166,20 +167,27 @@ export const Home = () => {
               {t('home.hero.subtitle')}
             </p>
             
-            <div className="mt-16 flex flex-wrap justify-center gap-8">
-              <button 
-                onClick={() => document.getElementById('search-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group flex items-center gap-6 rounded-full bg-primary px-10 py-5 text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/40"
-              >
-                {t('home.hero.cta')}
-                <ArrowRight size={20} className="transition-transform group-hover:translate-x-2 rtl:rotate-180" />
-              </button>
+            <div className="mt-16 flex flex-wrap justify-center gap-4 sm:gap-8">
               <Link
-                to="/about"
-                className="flex items-center gap-6 rounded-full border border-black/10 bg-white px-10 py-5 text-xs font-black uppercase tracking-[0.2em] text-black shadow-xl transition-all hover:bg-gray-50 active:scale-95"
+                to="/cars"
+                className="group flex items-center gap-4 sm:gap-6 rounded-full bg-primary px-6 sm:px-10 py-4 sm:py-5 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/40 whitespace-nowrap"
               >
-                {t('home.hero.story')}
-                <Play size={18} fill="currentColor" className="rtl:rotate-180" />
+                {t('home.collection.cta')}
+                <ChevronRight size={18} className="rtl:rotate-180 transition-transform group-hover:translate-x-2" />
+              </Link>
+              <Link
+                to="/cars"
+                className="group flex items-center gap-4 sm:gap-6 rounded-full border border-black/10 bg-white px-6 sm:px-10 py-4 sm:py-5 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-black shadow-xl transition-all hover:bg-gray-50 active:scale-95 whitespace-nowrap"
+              >
+                {t('home.cta.book')}
+                <Calendar size={18} className="rtl:rotate-180" />
+              </Link>
+              <Link
+                to="/contact"
+                className="group flex items-center gap-4 sm:gap-6 rounded-full border border-black/10 bg-white px-6 sm:px-10 py-4 sm:py-5 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-black shadow-xl transition-all hover:bg-gray-50 active:scale-95 whitespace-nowrap"
+              >
+                {t('home.cta.contact')}
+                <MessageCircle size={18} className="rtl:rotate-180 transition-transform group-hover:translate-x-2" />
               </Link>
             </div>
           </motion.div>
@@ -268,29 +276,9 @@ export const Home = () => {
 
               <div className="flex flex-col items-center md:items-end gap-12 relative">
                 {/* Decorative Floating Image */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8, y: 20, rotate: 6 }}
-                  whileInView={{ opacity: 1, scale: 1, y: 0, rotate: -6 }}
-                  animate={{ y: [0, -15, 0] }}
-                  viewport={{ once: true }}
-                  transition={{ 
-                    duration: 1.2, 
-                    ease: [0.16, 1, 0.3, 1],
-                    y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
-                  }}
-                  className="relative z-0"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=800"
-                    alt="Luxury Car Detail"
-                    className="h-40 w-64 sm:h-56 sm:w-80 object-cover rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl border border-white/20 backdrop-blur-sm transition-transform duration-700 hover:rotate-0 hover:scale-110"
-                    referrerPolicy="no-referrer"
-                  />
-                </motion.div>
-
                 <Link
                   to="/cars"
-                  className="group flex items-center gap-6 rounded-full border border-primary bg-primary px-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-primary/90 shadow-2xl shadow-primary/30 relative z-10"
+                  className="group flex items-center gap-6 rounded-full border border-primary bg-primary px-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-primary/90 shadow-2xl shadow-primary/30 relative z-10 whitespace-nowrap"
                 >
                   {t('home.collection.cta')}
                   <ChevronRight size={20} className="rtl:rotate-180 transition-transform group-hover:translate-x-2" />
@@ -340,15 +328,15 @@ export const Home = () => {
       </section>
 
       {/* Experience Section - Split Layout */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
-        <div className="relative h-[300px] lg:h-auto overflow-hidden">
+      <section className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px] lg:min-h-[600px]">
+        <div className="relative aspect-video lg:aspect-auto lg:h-auto overflow-hidden">
           <img 
-            src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=1000" 
+            src={settings?.experienceImage || "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=1000"} 
             alt="Driving Experience" 
             className="h-full w-full object-cover object-center brightness-100 contrast-100"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent lg:from-black/60" />
         </div>
         <div className="flex flex-col justify-center bg-black/5 px-8 py-16 lg:px-32 rtl:text-right relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full" />
@@ -486,35 +474,49 @@ export const Home = () => {
         <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[4rem] bg-black/5 px-8 py-16 sm:px-12 sm:py-20 text-center text-foreground shadow-2xl border border-black/5">
           <div className="absolute inset-0 z-0">
             <img 
-              src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=2000" 
+              src={settings?.ctaImage || "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=2000"} 
               alt="CTA Background" 
               className="h-full w-full object-cover opacity-100"
               referrerPolicy="no-referrer"
             />
+            <div className="absolute inset-0 bg-black/20" />
           </div>
           
           <div className="relative z-10">
             <span className="mb-8 inline-block text-[11px] font-black uppercase tracking-[0.4em] text-primary">
               {t('home.cta.tag')}
             </span>
-            <h2 className="serif text-5xl sm:text-8xl font-black text-foreground leading-[0.9] tracking-tighter">
-              {t('home.cta.title')}
-            </h2>
-            <p className="mx-auto mt-10 max-w-2xl text-xl font-light text-foreground/50 leading-relaxed">
-              {t('home.cta.subtitle')}
-            </p>
-            <div className="mt-16 flex flex-wrap justify-center gap-8">
+            {t('home.cta.title') && (
+              <h2 className="serif text-5xl sm:text-8xl font-black text-foreground leading-[0.9] tracking-tighter">
+                {t('home.cta.title')}
+              </h2>
+            )}
+            {t('home.cta.subtitle') && (
+              <p className="mx-auto mt-10 max-w-2xl text-xl font-light text-foreground/50 leading-relaxed">
+                {t('home.cta.subtitle')}
+              </p>
+            )}
+            <div className="mt-16 flex flex-wrap justify-center gap-4 sm:gap-8">
               <Link
                 to="/cars"
-                className="rounded-full bg-primary px-12 py-6 text-xs font-black uppercase tracking-[0.2em] text-white shadow-2xl transition-all hover:scale-105 active:scale-95 shadow-primary/40"
+                className="group flex items-center gap-4 sm:gap-6 rounded-full bg-primary px-6 sm:px-10 py-4 sm:py-5 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/40 whitespace-nowrap"
+              >
+                {t('home.collection.cta')}
+                <ChevronRight size={18} className="rtl:rotate-180 transition-transform group-hover:translate-x-2" />
+              </Link>
+              <Link
+                to="/cars"
+                className="group flex items-center gap-4 sm:gap-6 rounded-full border border-black/10 bg-white px-6 sm:px-10 py-4 sm:py-5 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-black shadow-xl transition-all hover:bg-gray-50 active:scale-95 whitespace-nowrap"
               >
                 {t('home.cta.book')}
+                <Calendar size={18} className="rtl:rotate-180" />
               </Link>
               <Link
                 to="/contact"
-                className="rounded-full border border-black/10 bg-white px-12 py-6 text-xs font-black uppercase tracking-[0.2em] text-black shadow-xl transition-all hover:bg-gray-50 active:scale-95"
+                className="group flex items-center gap-4 sm:gap-6 rounded-full border border-black/10 bg-white px-6 sm:px-10 py-4 sm:py-5 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-black shadow-xl transition-all hover:bg-gray-50 active:scale-95 whitespace-nowrap"
               >
                 {t('home.cta.contact')}
+                <MessageCircle size={18} className="rtl:rotate-180 transition-transform group-hover:translate-x-2" />
               </Link>
             </div>
           </div>

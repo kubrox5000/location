@@ -60,6 +60,16 @@
         "whatsapp": { "type": "string" },
         "address": { "type": "string" },
         "addressAr": { "type": "string" },
+        "logo": { "type": "string" },
+        "favicon": { "type": "string" },
+        "heroImage": { "type": "string" },
+        "ctaImage": { "type": "string" },
+        "experienceImage": { "type": "string" },
+        "currency": { "type": "string" },
+        "facebook": { "type": "string" },
+        "twitter": { "type": "string" },
+        "instagram": { "type": "string" },
+        "linkedin": { "type": "string" },
         "updatedAt": { "type": "string", "format": "date-time" }
       }
     },

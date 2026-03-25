@@ -15,9 +15,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { addDays, eachDayOfInterval, format, parseISO } from 'date-fns';
 
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../context/SettingsContext';
 
 export const CarDetails = () => {
   const { t, i18n } = useTranslation();
+  const { settings } = useSettings();
   const { id } = useParams();
   const navigate = useNavigate();
   const [car, setCar] = React.useState<Car | null>(null);
@@ -37,16 +39,18 @@ export const CarDetails = () => {
     const fetchData = async () => {
       if (!id) return;
       try {
-        const [carsData, bookingsData] = await Promise.all([
-          carService.getAll(),
-          bookingService.getAll()
-        ]);
-        const found = carsData.find(c => c.id === id);
-        setCar(found || null);
-        if (found) {
-          setFormData(prev => ({ ...prev, city: found.cities[0] || '' }));
+        const carData = await carService.getById(id);
+        setCar(carData);
+        if (carData) {
+          setFormData(prev => ({ ...prev, city: carData.cities[0] || '' }));
+          try {
+            const bookingsData = await bookingService.getAll();
+            setBookings(bookingsData.filter(b => b.carId === id && b.status !== 'Cancelled'));
+          } catch (e) {
+            console.warn('Could not fetch bookings (likely public user):', e);
+            setBookings([]);
+          }
         }
-        setBookings(bookingsData.filter(b => b.carId === id && b.status !== 'Cancelled'));
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -117,7 +121,7 @@ export const CarDetails = () => {
     const bookingData = {
       carId: car.id,
       customerName: formData.fullName,
-      customerPhone: formData.phone,
+      phone: formData.phone,
       city: formData.city,
       pickupDate: format(formData.pickupDate, 'yyyy-MM-dd'),
       returnDate: format(formData.returnDate, 'yyyy-MM-dd'),
@@ -136,9 +140,10 @@ export const CarDetails = () => {
 
 
   const handleWhatsAppBooking = () => {
-    const message = `Hello, I want to book ${car.brand} ${car.name} in ${formData.city}.`;
+    const currency = settings?.currency || 'USD';
+    const message = `Hello, I want to book ${car.brand} ${car.name} in ${formData.city}. Price: ${car.pricePerDay} ${currency}/day.`;
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/1234567890?text=${encodedMessage}`, '_blank');
+    window.open(`https://wa.me/${settings?.whatsapp || '1234567890'}?text=${encodedMessage}`, '_blank');
   };
 
   return (
@@ -240,16 +245,30 @@ export const CarDetails = () => {
           {/* Right: Booking Card */}
           <div className="lg:sticky lg:top-32 h-fit">
             <div className="overflow-hidden rounded-[3rem] border border-black/5 glass shadow-2xl shadow-black/10">
-              <div className="bg-primary p-8 text-white relative overflow-hidden">
+              <div className="bg-white p-8 text-foreground relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-[11px] font-black uppercase tracking-[0.4em] text-white/60">{t('carDetails.rentalPrice')}</p>
-                  <div className="mt-4 flex items-baseline gap-3">
-                    <span className="serif text-6xl font-black tracking-tighter">${car.pricePerDay}</span>
-                    <span className="text-sm font-bold uppercase tracking-widest opacity-60">{t('carDetails.perDay')}</span>
+                  <p className="text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground">{t('carDetails.rentalPrice')}</p>
+                  <div className="mt-4 flex items-baseline gap-3 text-primary">
+                    {settings?.currency === 'MAD' ? (
+                      <>
+                        <span className="serif text-6xl font-black tracking-tighter">{car.pricePerDay}</span>
+                        <span className="text-2xl font-black tracking-tighter">DH</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="serif text-6xl font-black tracking-tighter">
+                          {settings?.currency === 'EUR' ? '€' : 
+                           settings?.currency === 'AED' ? 'AED' :
+                           settings?.currency === 'SAR' ? 'SR' : '$'}
+                          {car.pricePerDay}
+                        </span>
+                      </>
+                    )}
+                    <span className="text-sm font-bold uppercase tracking-widest opacity-60 text-muted-foreground">{t('carDetails.perDay')}</span>
                   </div>
                 </div>
-                <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10 blur-[80px]" />
-                <div className="absolute -left-12 -bottom-12 h-48 w-48 rounded-full bg-black/20 blur-[80px]" />
+                <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-primary/5 blur-[80px]" />
+                <div className="absolute -left-12 -bottom-12 h-48 w-48 rounded-full bg-black/5 blur-[80px]" />
               </div>
 
               <div className="p-8">

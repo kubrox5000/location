@@ -9,9 +9,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { eachDayOfInterval, format, parseISO, isWithinInterval, startOfDay, addDays } from 'date-fns';
 
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../context/SettingsContext';
 
 export const AdminBookings = () => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
   const [bookings, setBookings] = React.useState<Booking[]>([]);
   const [cars, setCars] = React.useState<Car[]>([]);
   const [cities, setCities] = React.useState<string[]>([]);
@@ -220,7 +222,9 @@ export const AdminBookings = () => {
                       <span className="text-foreground/30">{t('admin.bookings.to')} {booking.returnDate}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-bold text-foreground">${booking.totalPrice}</td>
+                  <td className="px-6 py-4 font-bold text-foreground">
+                    {settings?.currency === 'MAD' ? `${booking.totalPrice} DH` : `$${booking.totalPrice}`}
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
                       booking.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-600' : 
@@ -340,7 +344,9 @@ export const AdminBookings = () => {
                       >
                         <option value="">{t('admin.bookings.modal.chooseCar')}</option>
                         {cars.map(car => (
-                          <option key={car.id} value={car.id}>{car.brand} {car.name} (${car.pricePerDay}/{t('admin.bookings.day')})</option>
+                          <option key={car.id} value={car.id}>
+                            {car.brand} {car.name} ({settings?.currency === 'MAD' ? `${car.pricePerDay} DH` : `$${car.pricePerDay}`}/{t('admin.bookings.day')})
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -410,7 +416,9 @@ export const AdminBookings = () => {
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-primary/60">{t('admin.bookings.modal.estimatedTotal')}</p>
-                      <p className="text-2xl font-black text-primary">${calculateTotalPrice()}</p>
+                      <p className="text-2xl font-black text-primary">
+                        {settings?.currency === 'MAD' ? `${calculateTotalPrice()} DH` : `$${calculateTotalPrice()}`}
+                      </p>
                     </div>
                   </div>
                   <button
@@ -498,7 +506,9 @@ export const AdminBookings = () => {
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{t('admin.bookings.table.total')}</p>
-                    <p className="text-xl font-black text-primary">${selectedBooking.totalPrice}</p>
+                    <p className="text-xl font-black text-primary">
+                      {settings?.currency === 'MAD' ? `${selectedBooking.totalPrice} DH` : `$${selectedBooking.totalPrice}`}
+                    </p>
                   </div>
                 </div>
 
@@ -557,7 +567,9 @@ export const AdminBookings = () => {
                   <CheckCircle size={12} />
                   {t('admin.bookings.available')}
                 </div>
-                <p className="text-sm font-black text-foreground">${car.pricePerDay}/{t('admin.bookings.day')}</p>
+                <p className="text-sm font-black text-foreground">
+                  {settings?.currency === 'MAD' ? `${car.pricePerDay} DH` : `$${car.pricePerDay}`}/{t('admin.bookings.day')}
+                </p>
               </div>
             </div>
           ))}

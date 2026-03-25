@@ -19,9 +19,17 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  getAuth,
+  initializeAuth,
+  updateEmail,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential
 } from 'firebase/auth';
+import { initializeApp, getApp, getApps } from 'firebase/app';
 import { db, auth } from './firebase';
+import firebaseConfig from '../../firebase-applet-config.json';
 import { Car, Booking, Settings, User } from '../types';
 
 enum OperationType {
@@ -94,6 +102,14 @@ export const settingsService = {
         addressAr: '123 شارع الفخامة، دبي، الإمارات',
         logo: '',
         favicon: '',
+        heroImage: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=2000',
+        ctaImage: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=2000',
+        experienceImage: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=1000',
+        currency: 'USD',
+        facebook: '',
+        twitter: '',
+        instagram: '',
+        linkedin: '',
         updatedAt: new Date().toISOString(),
       };
       await setDoc(docRef, defaultSettings);
@@ -119,6 +135,19 @@ export const settingsService = {
 };
 
 export const carService = {
+  getById: async (id: string): Promise<Car | null> => {
+    const path = 'cars';
+    try {
+      const docSnap = await getDoc(doc(db, path, id));
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() } as Car;
+      }
+      return null;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, `${path}/${id}`);
+      return null;
+    }
+  },
   getAll: async (): Promise<Car[]> => {
     const path = 'cars';
     try {
@@ -234,20 +263,83 @@ export const bookingService = {
   },
 };
 
+export const userService = {
+  getAll: async (): Promise<User[]> => {
+    const path = 'users';
+    try {
+      const querySnapshot = await getDocs(collection(db, path));
+      return querySnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as User));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, path);
+      throw error;
+    }
+  },
+  update: async (uid: string, data: Partial<User>): Promise<User> => {
+    const path = `users/${uid}`;
+    try {
+      const docRef = doc(db, 'users', uid);
+      await updateDoc(docRef, data);
+      const updatedSnap = await getDoc(docRef);
+      return { uid: updatedSnap.id, ...updatedSnap.data() } as User;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+      throw error;
+    }
+  },
+  delete: async (uid: string): Promise<void> => {
+    const path = `users/${uid}`;
+    try {
+      await deleteDoc(doc(db, 'users', uid));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, path);
+      throw error;
+    }
+  },
+  createStaff: async (data: any): Promise<User> => {
+    // To create a user without logging out the current admin, we use a secondary Firebase app
+    const secondaryAppName = `secondary-app-${Date.now()}`;
+    const secondaryApp = initializeApp(firebaseConfig, secondaryAppName);
+    const secondaryAuth = getAuth(secondaryApp);
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, data.email, data.password);
+      const user = userCredential.user;
+      
+      const userData: User = {
+        uid: user.uid,
+        email: user.email!,
+        role: data.role || 'staff',
+        permissions: data.permissions || []
+      };
+      
+      await setDoc(doc(db, 'users', user.uid), userData);
+      
+      // Clean up secondary app
+      await secondaryAuth.signOut();
+      // Note: Firebase JS SDK doesn't have a direct "deleteApp" in all versions, 
+      // but signing out and letting it be garbage collected is usually fine for this context.
+      
+      return userData;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export const adminService = {
   login: async (credentials: any) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
       const user = userCredential.user;
       
-      // Check if user is admin in Firestore
+      // Check if user is admin or staff in Firestore
       const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
+      if (!userDoc.exists() || (userDoc.data().role !== 'admin' && userDoc.data().role !== 'staff')) {
         await signOut(auth);
-        throw new Error('Unauthorized: Admin access required');
+        throw new Error('Unauthorized: Admin or Staff access required');
       }
       
-      return { uid: user.uid, email: user.email, role: 'admin' };
+      return { uid: user.uid, email: user.email, ...userDoc.data() } as User;
     } catch (error) {
       throw error;
     }
@@ -257,7 +349,7 @@ export const adminService = {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
-
+ 
       // Check if user exists in Firestore, if not create them as admin if it's the default email
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (!userDoc.exists()) {
@@ -265,7 +357,8 @@ export const adminService = {
         const userData: User = {
           uid: user.uid,
           email: user.email!,
-          role: role as 'admin' | 'user'
+          role: role as 'admin' | 'user',
+          permissions: role === 'admin' ? ['manage_fleet', 'manage_bookings', 'manage_cities', 'manage_settings', 'manage_staff'] : []
         };
         await setDoc(doc(db, 'users', user.uid), userData);
         
@@ -275,30 +368,13 @@ export const adminService = {
         }
         return userData;
       }
-
-      if (userDoc.data().role !== 'admin') {
+ 
+      if (userDoc.data().role !== 'admin' && userDoc.data().role !== 'staff') {
         await signOut(auth);
-        throw new Error('Unauthorized: Admin access required');
+        throw new Error('Unauthorized: Admin or Staff access required');
       }
-
-      return { uid: user.uid, email: user.email, role: 'admin' };
-    } catch (error) {
-      throw error;
-    }
-  },
-  register: async (data: any) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const user = userCredential.user;
-      
-      const userData: User = {
-        uid: user.uid,
-        email: user.email!,
-        role: 'admin' // In this app, registration creates an admin
-      };
-      
-      await setDoc(doc(db, 'users', user.uid), userData);
-      return userData;
+ 
+      return { uid: user.uid, email: user.email, ...userDoc.data() } as User;
     } catch (error) {
       throw error;
     }
@@ -308,5 +384,40 @@ export const adminService = {
   },
   getCurrentUser: () => {
     return auth.currentUser;
+  },
+  updateEmail: async (newEmail: string) => {
+    const user = auth.currentUser;
+    if (!user) throw new Error('No user logged in');
+    
+    try {
+      await updateEmail(user, newEmail);
+      // Update Firestore document as well
+      await updateDoc(doc(db, 'users', user.uid), { email: newEmail });
+    } catch (error: any) {
+      if (error.code === 'auth/requires-recent-login') {
+        throw new Error('REAUTHENTICATION_REQUIRED');
+      }
+      throw error;
+    }
+  },
+  updatePassword: async (newPassword: string) => {
+    const user = auth.currentUser;
+    if (!user) throw new Error('No user logged in');
+    
+    try {
+      await updatePassword(user, newPassword);
+    } catch (error: any) {
+      if (error.code === 'auth/requires-recent-login') {
+        throw new Error('REAUTHENTICATION_REQUIRED');
+      }
+      throw error;
+    }
+  },
+  reauthenticate: async (password: string) => {
+    const user = auth.currentUser;
+    if (!user || !user.email) throw new Error('No user logged in');
+    
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
   }
 };

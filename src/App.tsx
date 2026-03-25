@@ -10,7 +10,6 @@ import { Home } from './pages/Home';
 import { CarListing } from './pages/CarListing';
 import { CarDetails } from './pages/CarDetails';
 import { AdminLogin } from './pages/AdminLogin';
-import { AdminRegister } from './pages/AdminRegister';
 import { AdminLayout } from './components/AdminLayout';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { AdminCars } from './pages/AdminCars';
@@ -19,6 +18,9 @@ import { AdminAvailableCars } from './pages/AdminAvailableCars';
 import { AdminReceiveTomorrow } from './pages/AdminReceiveTomorrow';
 import { AdminCities } from './pages/AdminCities';
 import { AdminSettings } from './pages/AdminSettings';
+import { AdminStaff } from './pages/AdminStaff';
+import { AdminAccount } from './pages/AdminAccount';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { About } from './pages/About';
 import { HowToBook } from './pages/HowToBook';
 import { Contact } from './pages/Contact';
@@ -28,63 +30,17 @@ import { auth, db } from './services/firebase';
 import { Settings } from './types';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
+import { SettingsProvider, useSettings } from './context/SettingsContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
 const AppContent = () => {
   const { i18n } = useTranslation();
   const location = useLocation();
-  const [settings, setSettings] = React.useState<Settings | null>(null);
-  const [isAuthReady, setIsAuthReady] = React.useState(false);
-  const [user, setUser] = React.useState<any>(null);
+  const { settings, loading: settingsLoading } = useSettings();
+  const { user, loading: authLoading } = useAuth();
 
   const isAdminPath = location.pathname.startsWith('/admin') && 
     !['/admin/login', '/admin/register'].includes(location.pathname);
-
-  React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setIsAuthReady(true);
-    });
-
-    // Test Firestore connection
-    const testConnection = async () => {
-      try {
-        await getDocFromServer(doc(db, 'settings', 'global'));
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('the client is offline')) {
-          console.error("Please check your Firebase configuration.");
-        }
-      }
-    };
-    testConnection();
-
-    return () => unsubscribe();
-  }, []);
-
-  React.useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const data = await settingsService.get();
-        setSettings(data);
-        
-        // Update favicon dynamically
-        if (data.favicon) {
-          const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-          if (link) {
-            link.href = data.favicon;
-          } else {
-            const newLink = document.createElement('link');
-            newLink.rel = 'icon';
-            newLink.href = data.favicon;
-            document.head.appendChild(newLink);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch settings:', error);
-      }
-    };
-    if (isAuthReady) {
-      fetchSettings();
-    }
-  }, [isAuthReady]);
 
   React.useEffect(() => {
     const dir = i18n.dir(i18n.language);
@@ -96,7 +52,7 @@ const AppContent = () => {
     window.open(`https://wa.me/${settings?.whatsapp || '1234567890'}?text=Hello, I have a question about car rentals.`, '_blank');
   };
 
-  if (!isAuthReady) {
+  if (authLoading || settingsLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-accent" />
@@ -105,19 +61,18 @@ const AppContent = () => {
   }
 
   if (isAdminPath) {
-    if (!user) {
-      return <Navigate to="/admin/login" state={{ from: location }} replace />;
-    }
     return (
       <AdminLayout>
         <Routes>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/cars" element={<AdminCars />} />
-          <Route path="/admin/cities" element={<AdminCities />} />
-          <Route path="/admin/bookings" element={<AdminBookings />} />
-          <Route path="/admin/available-cars" element={<AdminAvailableCars />} />
-          <Route path="/admin/receive-tomorrow" element={<AdminReceiveTomorrow />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/cars" element={<ProtectedRoute permission="manage_fleet"><AdminCars /></ProtectedRoute>} />
+          <Route path="/admin/cities" element={<ProtectedRoute permission="manage_cities"><AdminCities /></ProtectedRoute>} />
+          <Route path="/admin/bookings" element={<ProtectedRoute permission="manage_bookings"><AdminBookings /></ProtectedRoute>} />
+          <Route path="/admin/available-cars" element={<ProtectedRoute permission="manage_fleet"><AdminAvailableCars /></ProtectedRoute>} />
+          <Route path="/admin/receive-tomorrow" element={<ProtectedRoute permission="manage_bookings"><AdminReceiveTomorrow /></ProtectedRoute>} />
+          <Route path="/admin/staff" element={<ProtectedRoute permission="manage_staff"><AdminStaff /></ProtectedRoute>} />
+          <Route path="/admin/account" element={<ProtectedRoute><AdminAccount /></ProtectedRoute>} />
+          <Route path="/admin/settings" element={<ProtectedRoute permission="manage_settings"><AdminSettings /></ProtectedRoute>} />
         </Routes>
       </AdminLayout>
     );
@@ -132,7 +87,6 @@ const AppContent = () => {
           <Route path="/cars" element={<CarListing />} />
           <Route path="/car/:id" element={<CarDetails />} />
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/register" element={<AdminRegister />} />
           <Route path="/about" element={<About />} />
           <Route path="/how-to-book" element={<HowToBook />} />
           <Route path="/contact" element={<Contact />} />
@@ -156,10 +110,14 @@ const AppContent = () => {
 export default function App() {
   return (
     <ErrorBoundary>
-      <Router>
-        <Toaster position="top-right" />
-        <AppContent />
-      </Router>
+      <AuthProvider>
+        <SettingsProvider>
+          <Router>
+            <Toaster position="top-right" />
+            <AppContent />
+          </Router>
+        </SettingsProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

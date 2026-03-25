@@ -4,6 +4,7 @@ import { Users, Fuel, Gauge, MapPin, DoorOpen, Snowflake, ChevronRight } from 'l
 import { useTranslation } from 'react-i18next';
 import { Car } from '../types';
 import { motion } from 'motion/react';
+import { useSettings } from '../context/SettingsContext';
 
 interface CarCardProps {
   car: Car;
@@ -11,10 +12,16 @@ interface CarCardProps {
 
 export const CarCard: React.FC<CarCardProps> = ({ car }) => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
 
   const translatedType = t(`admin.fleet.options.types.${car.type.toLowerCase()}`);
   const translatedTransmission = t(`admin.fleet.options.transmissions.${car.transmission.toLowerCase()}`);
   const translatedFuel = t(`admin.fleet.options.fuels.${car.fuelType.toLowerCase()}`);
+
+  const currencySymbol = settings?.currency === 'MAD' ? 'DH' : 
+                        settings?.currency === 'EUR' ? '€' : 
+                        settings?.currency === 'AED' ? 'AED' :
+                        settings?.currency === 'SAR' ? 'SR' : '$';
 
   return (
     <motion.div
@@ -35,14 +42,19 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
         
         {/* Badges */}
         <div className="absolute inset-y-6 start-6 flex flex-col items-start gap-2">
-          <span className="rounded-full bg-black/10 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] text-foreground backdrop-blur-2xl border border-black/10 shadow-2xl">
+          <span className="rounded-full bg-primary px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.3em] text-white shadow-lg shadow-primary/20 border border-primary/20">
             {translatedType}
           </span>
         </div>
         
         <div className="absolute bottom-6 start-6">
-          <p className="serif text-2xl font-black text-white transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 translate-y-4">
-            ${car.pricePerDay}<span className="text-xs font-light opacity-60 italic"> {t('carDetails.perDay')}</span>
+          <p className="serif text-2xl font-black text-primary transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 translate-y-4">
+            {settings?.currency === 'MAD' ? (
+              <>{car.pricePerDay} <span className="text-sm">DH</span></>
+            ) : (
+              <>{currencySymbol}{car.pricePerDay}</>
+            )}
+            <span className="text-xs font-light opacity-60 italic"> {t('carDetails.perDay')}</span>
           </p>
         </div>
       </div>
@@ -54,8 +66,10 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
             <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">{car.brand}</p>
             <h3 className="serif text-xl font-black tracking-tighter text-foreground leading-none">{car.name}</h3>
           </div>
-          <div className="flex items-center gap-2 rounded-full bg-black/5 px-3 py-1.5 text-[9px] font-black text-foreground/40 border border-black/5 backdrop-blur-md">
-            <MapPin size={10} className="text-primary" />
+          <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-[9px] font-black text-primary border border-primary/20 backdrop-blur-md shadow-lg shadow-primary/10">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white">
+              <MapPin size={10} />
+            </div>
             {car.cities[0]}
           </div>
         </div>
@@ -63,29 +77,29 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
         {/* Specs Grid */}
         <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-black/5 pt-6">
           <div className="flex items-center gap-3 group/spec">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
-              <Users size={14} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+              <Users size={16} />
             </div>
-            <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{car.seats} {t('carDetails.specs.seats')}</span>
+            <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{car.seats} {t('carDetails.specs.seats')}</span>
           </div>
           <div className="flex items-center gap-3 group/spec">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
-              <Gauge size={14} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+              <Gauge size={16} />
             </div>
-            <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{translatedTransmission}</span>
+            <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{translatedTransmission}</span>
           </div>
           <div className="flex items-center gap-3 group/spec">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
-              <Fuel size={14} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+              <Fuel size={16} />
             </div>
-            <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{translatedFuel}</span>
+            <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{translatedFuel}</span>
           </div>
           {car.airConditioning && (
             <div className="flex items-center gap-3 group/spec">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-foreground/30 transition-all duration-500 group-hover/spec:bg-primary group-hover/spec:text-white group-hover/spec:scale-110 shadow-xl">
-                <Snowflake size={14} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20 transition-transform duration-500 group-hover/spec:scale-110">
+                <Snowflake size={16} />
               </div>
-              <span className="text-[10px] font-bold text-foreground/40 group-hover/spec:text-foreground transition-colors tracking-wide">{t('carDetails.specs.ac')}</span>
+              <span className="text-[10px] font-bold text-foreground/60 transition-colors tracking-wide">{t('carDetails.specs.ac')}</span>
             </div>
           )}
         </div>
@@ -94,7 +108,7 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
         <div className="mt-auto pt-8">
           <Link
             to={`/car/${car.id}`}
-            className="group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-primary px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.3em] text-white transition-all hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98]"
+            className="group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-primary px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.3em] text-white transition-all hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] whitespace-nowrap"
           >
             <span className="relative z-10">{t('carDetails.reserveNow')}</span>
             <ChevronRight size={16} className="relative z-10 transition-transform duration-500 group-hover/btn:translate-x-2 rtl:rotate-180 rtl:group-hover/btn:-translate-x-2" />

@@ -1,15 +1,26 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Save, Mail, Phone, MessageCircle, MapPin, Image as ImageIcon } from 'lucide-react';
+import { Save, Mail, Phone, MessageCircle, MapPin, Image as ImageIcon, Coins, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { settingsService } from '../services/api';
 import { Settings } from '../types';
 
+import { SettingsProvider, useSettings } from '../context/SettingsContext';
+
 export const AdminSettings = () => {
   const { t, i18n } = useTranslation();
+  const { refreshSettings } = useSettings();
   const [settings, setSettings] = React.useState<Settings | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
+
+  const currencies = [
+    { code: 'USD', symbol: '$', name: 'US Dollar' },
+    { code: 'EUR', symbol: '€', name: 'Euro' },
+    { code: 'MAD', symbol: 'DH', name: 'Moroccan Dirham' },
+    { code: 'AED', symbol: 'AED', name: 'UAE Dirham' },
+    { code: 'SAR', symbol: 'SR', name: 'Saudi Riyal' },
+  ];
 
   React.useEffect(() => {
     const fetchSettings = async () => {
@@ -33,6 +44,7 @@ export const AdminSettings = () => {
     setSaving(true);
     try {
       await settingsService.update(settings);
+      await refreshSettings();
       toast.success(t('admin.settings.success'));
       
       // Update favicon dynamically if changed
@@ -77,7 +89,7 @@ export const AdminSettings = () => {
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <ImageIcon size={16} className="text-primary" />
-                {i18n.language === 'ar' ? 'رابط شعار الموقع (Logo)' : 'Website Logo URL'}
+                {t('admin.settings.logo')}
               </label>
               <input
                 type="url"
@@ -99,7 +111,7 @@ export const AdminSettings = () => {
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <ImageIcon size={16} className="text-primary" />
-                {i18n.language === 'ar' ? 'رابط أيقونة الموقع (Favicon)' : 'Website Favicon URL'}
+                {t('admin.settings.favicon')}
               </label>
               <input
                 type="url"
@@ -112,6 +124,72 @@ export const AdminSettings = () => {
             {settings?.favicon && (
               <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center">
                 <img src={settings.favicon} alt="Favicon Preview" className="h-8 w-8 object-contain" referrerPolicy="no-referrer" />
+              </div>
+            )}
+          </div>
+
+          {/* Hero Image URL */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <ImageIcon size={16} className="text-primary" />
+                {t('admin.settings.heroImage')}
+              </label>
+              <input
+                type="url"
+                value={settings?.heroImage || ''}
+                onChange={(e) => setSettings(prev => prev ? { ...prev, heroImage: e.target.value } : null)}
+                placeholder="https://example.com/hero.jpg"
+                className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+            {settings?.heroImage && (
+              <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center overflow-hidden">
+                <img src={settings.heroImage} alt="Hero Preview" className="max-h-32 w-full object-cover" referrerPolicy="no-referrer" />
+              </div>
+            )}
+          </div>
+
+          {/* CTA Image URL */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <ImageIcon size={16} className="text-primary" />
+                {t('admin.settings.ctaImage')}
+              </label>
+              <input
+                type="url"
+                value={settings?.ctaImage || ''}
+                onChange={(e) => setSettings(prev => prev ? { ...prev, ctaImage: e.target.value } : null)}
+                placeholder="https://example.com/cta-bg.jpg"
+                className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+            {settings?.ctaImage && (
+              <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center overflow-hidden">
+                <img src={settings.ctaImage} alt="CTA Preview" className="max-h-32 w-full object-cover" referrerPolicy="no-referrer" />
+              </div>
+            )}
+          </div>
+
+          {/* Experience Image URL */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <ImageIcon size={16} className="text-primary" />
+                {t('admin.settings.experienceImage')}
+              </label>
+              <input
+                type="url"
+                value={settings?.experienceImage || ''}
+                onChange={(e) => setSettings(prev => prev ? { ...prev, experienceImage: e.target.value } : null)}
+                placeholder="https://example.com/experience.jpg"
+                className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+            {settings?.experienceImage && (
+              <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center overflow-hidden">
+                <img src={settings.experienceImage} alt="Experience Preview" className="max-h-32 w-full object-cover" referrerPolicy="no-referrer" />
               </div>
             )}
           </div>
@@ -159,6 +237,86 @@ export const AdminSettings = () => {
               placeholder="+15551234567"
               className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
               required
+            />
+          </div>
+
+          {/* Currency */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Coins size={16} className="text-primary" />
+              {t('admin.settings.currency')}
+            </label>
+            <select
+              value={settings?.currency || 'USD'}
+              onChange={(e) => setSettings(prev => prev ? { ...prev, currency: e.target.value } : null)}
+              className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+              required
+            >
+              {currencies.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code} ({c.symbol}) - {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Facebook */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Facebook size={16} className="text-primary" />
+              {t('admin.settings.facebook')}
+            </label>
+            <input
+              type="url"
+              value={settings?.facebook || ''}
+              onChange={(e) => setSettings(prev => prev ? { ...prev, facebook: e.target.value } : null)}
+              placeholder="https://facebook.com/yourpage"
+              className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+            />
+          </div>
+
+          {/* Twitter */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Twitter size={16} className="text-primary" />
+              {t('admin.settings.twitter')}
+            </label>
+            <input
+              type="url"
+              value={settings?.twitter || ''}
+              onChange={(e) => setSettings(prev => prev ? { ...prev, twitter: e.target.value } : null)}
+              placeholder="https://twitter.com/yourhandle"
+              className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+            />
+          </div>
+
+          {/* Instagram */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Instagram size={16} className="text-primary" />
+              {t('admin.settings.instagram')}
+            </label>
+            <input
+              type="url"
+              value={settings?.instagram || ''}
+              onChange={(e) => setSettings(prev => prev ? { ...prev, instagram: e.target.value } : null)}
+              placeholder="https://instagram.com/yourprofile"
+              className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+            />
+          </div>
+
+          {/* LinkedIn */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Linkedin size={16} className="text-primary" />
+              {t('admin.settings.linkedin')}
+            </label>
+            <input
+              type="url"
+              value={settings?.linkedin || ''}
+              onChange={(e) => setSettings(prev => prev ? { ...prev, linkedin: e.target.value } : null)}
+              placeholder="https://linkedin.com/company/yourcompany"
+              className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
             />
           </div>
         </div>

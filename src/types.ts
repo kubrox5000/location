@@ -33,7 +33,8 @@ export interface Booking {
 export interface User {
   uid: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'staff' | 'user';
+  permissions?: string[];
 }
 
 export interface Settings {
@@ -45,5 +46,13 @@ export interface Settings {
   addressAr: string;
   logo?: string;
   favicon?: string;
+  heroImage?: string;
+  ctaImage?: string;
+  experienceImage?: string;
+  currency?: string;
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  linkedin?: string;
   updatedAt: string;
 }

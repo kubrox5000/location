@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageCircle, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { settingsService } from '../services/api';
@@ -28,9 +28,9 @@ export const Contact = () => {
   };
 
   const contactItems = [
-    { icon: Phone, label: 'Phone', value: settings?.phone || '+1 (555) 123-4567', color: 'text-primary', bg: 'bg-primary/5' },
-    { icon: Mail, label: 'Email', value: settings?.email || 'support@driveselect.com', color: 'text-primary', bg: 'bg-primary/5' },
-    { icon: MapPin, label: 'Office', value: i18n.language === 'ar' ? settings?.addressAr : settings?.address || '123 Mobility Ave, San Francisco, CA', color: 'text-primary', bg: 'bg-primary/5' },
+    { icon: Phone, label: 'Phone', value: settings?.phone || '+1 (555) 123-4567', color: 'text-white', bg: 'bg-primary' },
+    { icon: Mail, label: 'Email', value: settings?.email || 'support@driveselect.com', color: 'text-white', bg: 'bg-primary' },
+    { icon: MapPin, label: 'Office', value: i18n.language === 'ar' ? settings?.addressAr : settings?.address || '123 Mobility Ave, San Francisco, CA', color: 'text-white', bg: 'bg-primary' },
   ];
 
   return (
@@ -47,7 +47,7 @@ export const Contact = () => {
           <div className="mt-12 space-y-8">
             {contactItems.map((item, idx) => (
               <div key={idx} className="flex items-center gap-6 rtl:flex-row-reverse">
-                <div className={`rounded-2xl ${item.bg} p-4 ${item.color}`}>
+                <div className={`rounded-2xl ${item.bg} p-4 ${item.color} shadow-lg shadow-primary/20`}>
                   <item.icon size={24} />
                 </div>
                 <div>
@@ -56,6 +56,29 @@ export const Contact = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Social Media Links */}
+          <div className="mt-12">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/30 mb-4">{t('footer.followUs')}</p>
+            <div className="flex gap-4 rtl:flex-row-reverse">
+              {[
+                { icon: Facebook, url: settings?.facebook, color: 'bg-[#1877F2]' },
+                { icon: Twitter, url: settings?.twitter, color: 'bg-[#000000]' },
+                { icon: Instagram, url: settings?.instagram, color: 'bg-[#E4405F]' },
+                { icon: Linkedin, url: settings?.linkedin, color: 'bg-[#0077B5]' }
+              ].map((social, idx) => (
+                <a
+                  key={idx}
+                  href={social.url || '#'}
+                  target={social.url ? "_blank" : undefined}
+                  rel={social.url ? "noopener noreferrer" : undefined}
+                  className={`flex h-12 w-12 items-center justify-center rounded-2xl ${social.color} text-white shadow-lg transition-all hover:-translate-y-1 hover:scale-110`}
+                >
+                  <social.icon size={20} />
+                </a>
+              ))}
+            </div>
           </div>
 
           <div className="mt-12 rounded-3xl bg-primary/5 p-8 border border-primary/10">

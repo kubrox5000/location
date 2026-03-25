@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Car, Facebook, Twitter, Instagram, Mail, Phone, MapPin, ArrowUpRight } from 'lucide-react';
+import { Car, Facebook, Twitter, Instagram, Mail, Phone, MapPin, ArrowUpRight, Linkedin } from 'lucide-react';
 import { settingsService } from '../services/api';
 import { Settings } from '../types';
 
@@ -20,6 +20,13 @@ export const Footer = () => {
     };
     fetchSettings();
   }, []);
+
+  const socialLinks = [
+    { Icon: Facebook, url: settings?.facebook || '#', color: 'hover:bg-[#1877F2] hover:border-[#1877F2]', textColor: 'text-[#1877F2]' },
+    { Icon: Twitter, url: settings?.twitter || '#', color: 'hover:bg-[#000000] hover:border-[#000000]', textColor: 'text-[#000000]' },
+    { Icon: Instagram, url: settings?.instagram || '#', color: 'hover:bg-[#E4405F] hover:border-[#E4405F]', textColor: 'text-[#E4405F]' },
+    { Icon: Linkedin, url: settings?.linkedin || '#', color: 'hover:bg-[#0077B5] hover:border-[#0077B5]', textColor: 'text-[#0077B5]' }
+  ];
 
   return (
     <footer className="bg-background pt-20 pb-12 text-foreground border-t border-black/5 relative overflow-hidden">
@@ -40,13 +47,15 @@ export const Footer = () => {
               {t('footer.tagline')}
             </p>
             <div className="mt-6 flex gap-3 rtl:flex-row-reverse">
-              {[Facebook, Twitter, Instagram].map((Icon, idx) => (
+              {socialLinks.map((social, idx) => (
                 <a 
                   key={idx} 
-                  href="#" 
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/5 text-primary transition-all hover:bg-primary hover:text-white hover:border-primary hover:-translate-y-1 shadow-lg shadow-primary/10 backdrop-blur-xl"
+                  href={social.url}
+                  target={social.url !== '#' ? "_blank" : undefined}
+                  rel={social.url !== '#' ? "noopener noreferrer" : undefined}
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl border border-black/5 bg-black/5 ${social.textColor} transition-all hover:text-white ${social.color} hover:-translate-y-1 shadow-lg shadow-black/5 backdrop-blur-xl`}
                 >
-                  <Icon size={18} />
+                  <social.Icon size={18} />
                 </a>
               ))}
             </div>
@@ -94,7 +103,7 @@ export const Footer = () => {
             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">{t('footer.contact')}</h3>
             <ul className="mt-4 space-y-6">
               <li className="flex items-start gap-4 rtl:flex-row-reverse group">
-                <div className="mt-1 rounded-xl bg-primary/5 border border-primary/20 p-2 text-primary shadow-lg shadow-primary/5 transition-all group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:scale-110">
+                <div className="mt-1 rounded-full bg-primary p-2 text-white shadow-lg shadow-primary/20 transition-all group-hover:scale-110">
                   <Phone size={14} />
                 </div>
                 <div>
@@ -103,7 +112,7 @@ export const Footer = () => {
                 </div>
               </li>
               <li className="flex items-start gap-4 rtl:flex-row-reverse group">
-                <div className="mt-1 rounded-xl bg-primary/5 border border-primary/20 p-2 text-primary shadow-lg shadow-primary/5 transition-all group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:scale-110">
+                <div className="mt-1 rounded-full bg-primary p-2 text-white shadow-lg shadow-primary/20 transition-all group-hover:scale-110">
                   <Mail size={14} />
                 </div>
                 <div>
@@ -112,7 +121,7 @@ export const Footer = () => {
                 </div>
               </li>
               <li className="flex items-start gap-4 rtl:flex-row-reverse group">
-                <div className="mt-1 rounded-xl bg-primary/5 border border-primary/20 p-2 text-primary shadow-lg shadow-primary/5 transition-all group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:scale-110">
+                <div className="mt-1 rounded-full bg-primary p-2 text-white shadow-lg shadow-primary/20 transition-all group-hover:scale-110">
                   <MapPin size={14} />
                 </div>
                 <div>
@@ -126,13 +135,29 @@ export const Footer = () => {
           </div>
         </div>
         
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-black/5 pt-6 md:flex-row rtl:flex-row-reverse">
-          <p className="text-[8px] font-medium uppercase tracking-widest text-foreground/20">
-            &copy; {new Date().getFullYear()} DRIVE SELECT. {t('footer.rights')}
-          </p>
-          <div className="flex gap-6 text-[8px] font-medium uppercase tracking-widest text-foreground/20">
-            <a href="#" className="hover:text-primary transition-colors">{t('footer.privacy')}</a>
-            <a href="#" className="hover:text-primary transition-colors">{t('footer.cookie')}</a>
+        <div className="mt-12 flex flex-col items-center justify-between gap-8 border-t border-black/5 pt-8 md:flex-row rtl:flex-row-reverse">
+          <div className="flex flex-col items-center md:items-start gap-4 rtl:md:items-end">
+            <p className="text-[8px] font-medium uppercase tracking-widest text-foreground/20">
+              &copy; {new Date().getFullYear()} DRIVE SELECT. {t('footer.rights')}
+            </p>
+            <div className="flex gap-6 text-[8px] font-medium uppercase tracking-widest text-foreground/20">
+              <a href="#" className="hover:text-primary transition-colors">{t('footer.privacy')}</a>
+              <a href="#" className="hover:text-primary transition-colors">{t('footer.cookie')}</a>
+            </div>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
+            {[
+              { src: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg", alt: "Mastercard" },
+              { src: "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg", alt: "PayPal" },
+              { src: "https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg", alt: "Amex" },
+              { src: "https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg", alt: "Apple Pay" }
+            ].map((payment, idx) => (
+              <div key={idx} className="flex h-12 items-center justify-center px-4 py-2 rounded-xl border border-black/5 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+                <img src={payment.src} alt={payment.alt} className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
+              </div>
+            ))}
           </div>
         </div>
       </div>

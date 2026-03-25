@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Search, Edit, Trash2, MapPin, DollarSign, Loader2, Calendar as CalendarIcon, XCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, MapPin, DollarSign, Loader2, Calendar as CalendarIcon, XCircle, CheckCircle } from 'lucide-react';
 import { Car } from '../types';
 import { carService, cityService } from '../services/api';
 import { motion, AnimatePresence } from 'motion/react';
@@ -17,6 +17,7 @@ export const AdminCars = () => {
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = React.useState(false);
   const [editingCar, setEditingCar] = React.useState<Car | null>(null);
   const [selectedCarForAvailability, setSelectedCarForAvailability] = React.useState<Car | null>(null);
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(null);
   const [carToDelete, setCarToDelete] = React.useState<Car | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [isUpdatingAvailability, setIsUpdatingAvailability] = React.useState(false);
@@ -135,15 +136,63 @@ export const AdminCars = () => {
     }
   };
 
-  const toggleDateAvailability = async (date: Date) => {
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+  };
+
+  const updateAvailabilityStatus = async (status: boolean) => {
+    if (!selectedCarForAvailability || !selectedDate) return;
+    
+    const dateStr = format(selectedDate, 'yyyy-MM-dd');
+    const newAvailability = { ...(selectedCarForAvailability.availability || {}) };
+    
+    if (status) {
+      // If setting to available, remove from the blocked list
+      delete newAvailability[dateStr];
+    } else {
+      // If setting to unavailable, add to the blocked list
+      newAvailability[dateStr] = false;
+    }
+
+    setIsUpdatingAvailability(true);
+    try {
+      const updated = await carService.update(selectedCarForAvailability.id, {
+        availability: newAvailability
+      });
+      setCars(cars.map(c => c.id === selectedCarForAvailability.id ? updated : c));
+      setSelectedCarForAvailability(updated);
+      toast.success(t('admin.fleet.successUpdate'));
+    } catch (error) {
+      toast.error(t('admin.fleet.errorAvailability'));
+    } finally {
+      setIsUpdatingAvailability(false);
+    }
+  };
+
+  const clearAllAvailability = async () => {
     if (!selectedCarForAvailability) return;
     
-    const dateStr = format(date, 'yyyy-MM-dd');
-    const currentAvailability = selectedCarForAvailability.availability || {};
-    const newAvailability = {
-      ...currentAvailability,
-      [dateStr]: currentAvailability[dateStr] === false ? true : false
-    };
+    setIsUpdatingAvailability(true);
+    try {
+      const updated = await carService.update(selectedCarForAvailability.id, {
+        availability: {}
+      });
+      setCars(cars.map(c => c.id === selectedCarForAvailability.id ? updated : c));
+      setSelectedCarForAvailability(updated);
+      toast.success(t('admin.fleet.successUpdate'));
+      setSelectedDate(null);
+    } catch (error) {
+      toast.error(t('admin.fleet.errorAvailability'));
+    } finally {
+      setIsUpdatingAvailability(false);
+    }
+  };
+
+  const removeBlockedDate = async (dateStr: string) => {
+    if (!selectedCarForAvailability) return;
+    
+    const newAvailability = { ...(selectedCarForAvailability.availability || {}) };
+    delete newAvailability[dateStr];
 
     setIsUpdatingAvailability(true);
     try {
@@ -249,7 +298,7 @@ export const AdminCars = () => {
                       </button>
                       <button 
                         onClick={() => handleDelete(car)}
-                        className="rounded-lg p-2 text-foreground/30 hover:bg-red-50 hover:text-red-600 transition-all"
+                        className="rounded-lg p-2 text-foreground/30 hover:bg-emerald-50 hover:text-emerald-600 transition-all"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -509,12 +558,16 @@ export const AdminCars = () => {
                   <div className="availability-picker-container">
                     <DatePicker
                       inline
-                      onChange={toggleDateAvailability}
+                      selected={selectedDate}
+                      onChange={handleDateSelect}
                       highlightDates={[
                         {
                           "blocked-date": Object.entries(selectedCarForAvailability.availability || {})
                             .filter(([_, isAvailable]) => !isAvailable)
-                            .map(([dateStr]) => parseISO(dateStr))
+                            .map(([dateStr]) => {
+                              const [year, month, day] = dateStr.split('-').map(Number);
+                              return new Date(year, month - 1, day);
+                            })
                         }
                       ]}
                       minDate={new Date()}
@@ -522,23 +575,76 @@ export const AdminCars = () => {
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-primary/5 p-4 space-y-3">
-                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.fleet.legend')}</h3>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full bg-primary"></div>
-                      <span className="text-xs text-foreground/60">{t('admin.fleet.blockedDate')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full border border-primary/20 bg-white"></div>
-                      <span className="text-xs text-foreground/60">{t('admin.fleet.available')}</span>
+                {selectedDate && (
+                  <div className="flex flex-col gap-3">
+                    <p className="text-center text-sm font-medium text-foreground">
+                      {format(selectedDate, 'PPP')}
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => updateAvailabilityStatus(true)}
+                        disabled={isUpdatingAvailability}
+                        className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-50 py-3 text-xs font-bold text-emerald-600 transition-all hover:bg-emerald-100 disabled:opacity-50"
+                      >
+                        <CheckCircle size={14} />
+                        {t('admin.fleet.available')}
+                      </button>
+                      <button
+                        onClick={() => updateAvailabilityStatus(false)}
+                        disabled={isUpdatingAvailability}
+                        className="flex items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-50 py-3 text-xs font-bold text-red-600 transition-all hover:bg-red-100 disabled:opacity-50"
+                      >
+                        <XCircle size={14} />
+                        {t('admin.fleet.unavailable')}
+                      </button>
                     </div>
                   </div>
-                  <p className="text-[10px] text-foreground/30 italic">{t('admin.fleet.clickToggle')}</p>
+                )}
+
+
+                <div className="space-y-4 pt-6 border-t border-primary/10">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.fleet.blockedDatesList')}</h3>
+                    {selectedCarForAvailability.availability && Object.values(selectedCarForAvailability.availability).some(v => !v) && (
+                      <button
+                        onClick={clearAllAvailability}
+                        disabled={isUpdatingAvailability}
+                        className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:underline disabled:opacity-50"
+                      >
+                        {t('admin.fleet.clearAvailability')}
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-[200px] overflow-y-auto rounded-2xl border border-primary/10 bg-primary/5 p-4 custom-scrollbar">
+                    {selectedCarForAvailability.availability && Object.entries(selectedCarForAvailability.availability)
+                      .filter(([_, isAvailable]) => !isAvailable)
+                      .sort(([a], [b]) => a.localeCompare(b))
+                      .map(([dateStr]) => (
+                        <div key={dateStr} className="flex items-center justify-between py-2 border-b border-primary/10 last:border-0">
+                          <span className="text-xs font-medium text-foreground">{format(parseISO(dateStr), 'PPP')}</span>
+                          <button
+                            onClick={() => removeBlockedDate(dateStr)}
+                            disabled={isUpdatingAvailability}
+                            className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 transition-all disabled:opacity-50"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    {(!selectedCarForAvailability.availability || !Object.values(selectedCarForAvailability.availability).some(v => !v)) && (
+                      <div className="py-4 text-center">
+                        <p className="text-[10px] text-foreground/30">{t('admin.fleet.noBlockedDates')}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <button
-                  onClick={() => setIsAvailabilityModalOpen(false)}
+                  onClick={() => {
+                    setIsAvailabilityModalOpen(false);
+                    setSelectedDate(null);
+                  }}
                   className="w-full rounded-xl bg-primary py-4 font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90"
                 >
                   {t('admin.fleet.done')}
@@ -558,18 +664,45 @@ export const AdminCars = () => {
           background: transparent;
           border: none;
         }
-        .availability-picker-container .react-datepicker__day--highlighted.blocked-date {
-          background-color: #d97706 !important;
-          color: white !important;
-          border-radius: 50%;
-        }
         .availability-picker-container .react-datepicker__day {
           width: 2.5rem;
           line-height: 2.5rem;
           margin: 0.2rem;
+          border-radius: 50% !important;
+          transition: all 0.2s ease;
+          color: white !important;
+        }
+        /* Default state for all valid days is Green (Available) */
+        .availability-picker-container .react-datepicker__day:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month) {
+          background-color: #10b981 !important;
+          color: white !important;
+          border-radius: 50% !important;
+        }
+
+        /* Blocked dates MUST be Red */
+        .availability-picker-container .react-datepicker__day--highlighted.blocked-date {
+          background-color: #ef4444 !important;
+          color: white !important;
+        }
+
+        /* Selected date gets a prominent black ring but keeps its status color */
+        .availability-picker-container .react-datepicker__day--selected {
+          box-shadow: 0 0 0 3px #000 !important;
+          transform: scale(1.1);
+          z-index: 10;
+        }
+
+        /* Explicitly maintain colors for selected state to be safe */
+        .availability-picker-container .react-datepicker__day--selected.blocked-date {
+          background-color: #ef4444 !important;
+        }
+
+        .availability-picker-container .react-datepicker__day--selected:not(.blocked-date) {
+          background-color: #10b981 !important;
         }
         .availability-picker-container .react-datepicker__day:hover {
-          border-radius: 50%;
+          transform: scale(1.1);
+          filter: brightness(1.1);
         }
       `}} />
       <AnimatePresence>
@@ -594,7 +727,7 @@ export const AdminCars = () => {
                 </button>
                 <button
                   onClick={confirmDelete}
-                  className="flex-1 rounded-xl bg-red-600 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 active:scale-95"
+                  className="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-all hover:bg-emerald-700 active:scale-95"
                 >
                   {t('admin.fleet.delete')}
                 </button>

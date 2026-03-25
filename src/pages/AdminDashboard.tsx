@@ -11,9 +11,11 @@ import { Booking, Car as CarType } from '../types';
 import { subDays, format, isAfter, startOfDay, parseISO, eachDayOfInterval, addDays, isWithinInterval } from 'date-fns';
 
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../context/SettingsContext';
 
 export const AdminDashboard = () => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
   const [timeRange, setTimeRange] = React.useState<'day' | 'week' | 'month' | 'custom'>('week');
   const [customDays, setCustomDays] = React.useState(7);
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
@@ -65,7 +67,7 @@ export const AdminDashboard = () => {
   const stats = [
     { 
       label: t('admin.dashboard.stats.earnings'), 
-      value: `$${totalEarnings.toLocaleString()}`, 
+      value: settings?.currency === 'MAD' ? `${totalEarnings.toLocaleString()} DH` : `$${totalEarnings.toLocaleString()}`, 
       icon: DollarSign, 
       color: 'bg-primary' 
     },

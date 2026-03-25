@@ -115,13 +115,6 @@ export const AdminLogin = () => {
             {loading ? 'Signing In...' : 'Sign In'}
             <ArrowRight size={20} />
           </button>
-
-          <p className="text-center text-sm text-foreground/60">
-            Need an admin account?{' '}
-            <Link to="/admin/register" className="font-bold text-primary hover:underline">
-              Register Now
-            </Link>
-          </p>
         </form>
         </div>
       </motion.div>

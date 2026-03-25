@@ -10,7 +10,8 @@ service cloud.firestore {
     // Fields:
     //   - uid: string (required)
     //   - email: string (required, email format)
-    //   - role: string (required, enum: ['admin', 'user'])
+    //   - role: string (required, enum: ['admin', 'staff', 'user'])
+    //   - permissions: list (optional, strings)
     //
     // Collection: cars
     // Document ID: auto-generated
@@ -54,6 +55,16 @@ service cloud.firestore {
     //   - whatsapp: string (optional)
     //   - address: string (optional)
     //   - addressAr: string (optional)
+    //   - logo: string (optional)
+    //   - favicon: string (optional)
+    //   - heroImage: string (optional)
+    //   - ctaImage: string (optional)
+    //   - experienceImage: string (optional)
+    //   - currency: string (optional)
+    //   - facebook: string (optional)
+    //   - twitter: string (optional)
+    //   - instagram: string (optional)
+    //   - linkedin: string (optional)
     //   - updatedAt: string (required, ISO 8601)
     //
     // ===============================================================
@@ -69,10 +80,17 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() &&
         (
+          (request.auth.token.email == "devhamada300@gmail.com") ||
           (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
-          request.auth.token.email == "devhamada300@gmail.com"
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
         );
+    }
+
+    function isStaff(permission) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff' &&
+        (permission == null || (permission in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions));
     }
 
     function isOwner(userId) {
@@ -84,7 +102,10 @@ service cloud.firestore {
     }
 
     function isValidDateString(dateStr) {
-      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+      return dateStr is string && (
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$") ||
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}$")
+      );
     }
 
     function hasOnlyAllowedFields(fields) {
@@ -96,10 +117,10 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidUser(data) {
-      return hasOnlyAllowedFields(['uid', 'email', 'role']) &&
-        data.uid == request.auth.uid &&
+      return hasOnlyAllowedFields(['uid', 'email', 'role', 'permissions']) &&
         isValidEmail(data.email) &&
-        data.role in ['admin', 'user'];
+        data.role in ['admin', 'staff', 'user'] &&
+        (!('permissions' in data) || data.permissions is list);
     }
 
     function isValidCar(data) {
@@ -133,8 +154,22 @@ service cloud.firestore {
     }
 
     function isValidSettings(data) {
-      return hasOnlyAllowedFields(['email', 'phone', 'whatsapp', 'address', 'addressAr', 'updatedAt', 'id']) &&
-        (!('email' in data) || isValidEmail(data.email)) &&
+      return hasOnlyAllowedFields(['email', 'phone', 'whatsapp', 'address', 'addressAr', 'logo', 'favicon', 'currency', 'updatedAt', 'id', 'facebook', 'twitter', 'instagram', 'linkedin', 'heroImage', 'ctaImage', 'experienceImage']) &&
+        (!('email' in data) || (isValidEmail(data.email) && data.email.size() <= 255)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 50)) &&
+        (!('whatsapp' in data) || (data.whatsapp is string && data.whatsapp.size() <= 50)) &&
+        (!('address' in data) || (data.address is string && data.address.size() <= 500)) &&
+        (!('addressAr' in data) || (data.addressAr is string && data.addressAr.size() <= 500)) &&
+        (!('logo' in data) || (data.logo is string && data.logo.size() <= 1000)) &&
+        (!('favicon' in data) || (data.favicon is string && data.favicon.size() <= 1000)) &&
+        (!('heroImage' in data) || (data.heroImage is string && data.heroImage.size() <= 1000)) &&
+        (!('ctaImage' in data) || (data.ctaImage is string && data.ctaImage.size() <= 1000)) &&
+        (!('experienceImage' in data) || (data.experienceImage is string && data.experienceImage.size() <= 1000)) &&
+        (!('currency' in data) || (data.currency is string && data.currency.size() <= 10)) &&
+        (!('facebook' in data) || (data.facebook is string && data.facebook.size() <= 1000)) &&
+        (!('twitter' in data) || (data.twitter is string && data.twitter.size() <= 1000)) &&
+        (!('instagram' in data) || (data.instagram is string && data.instagram.size() <= 1000)) &&
+        (!('linkedin' in data) || (data.linkedin is string && data.linkedin.size() <= 1000)) &&
         isValidDateString(data.updatedAt);
     }
 
@@ -143,31 +178,32 @@ service cloud.firestore {
     // ===============================================================
 
     match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == 'user' || isAdmin());
-      allow update: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == resource.data.role || isAdmin());
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin() || isStaff('manage_staff'));
+      allow create: if isAuthenticated() && (isAdmin() || (isOwner(userId) && request.resource.data.role == 'user')) && isValidUser(request.resource.data);
+      allow update: if isAuthenticated() && (isAdmin() || isOwner(userId) || isStaff('manage_staff')) && isValidUser(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /cars/{carId} {
       allow read: if true;
-      allow write: if isAdmin() && isValidCar(request.resource.data);
+      allow write: if (isAdmin() || isStaff('manage_fleet')) && isValidCar(request.resource.data);
     }
 
     match /bookings/{bookingId} {
-      allow read: if isAdmin();
+      allow read: if isAdmin() || isStaff('manage_bookings');
       allow create: if isValidBooking(request.resource.data);
-      allow update: if isAdmin() && isValidBooking(request.resource.data);
-      allow delete: if isAdmin();
+      allow update: if (isAdmin() || isStaff('manage_bookings')) && isValidBooking(request.resource.data);
+      allow delete: if isAdmin() || isStaff('manage_bookings');
     }
 
     match /cities/{cityId} {
       allow read: if true;
-      allow write: if isAdmin() && isValidCity(request.resource.data);
+      allow write: if (isAdmin() || isStaff('manage_cities')) && isValidCity(request.resource.data);
     }
 
     match /settings/{settingId} {
       allow read: if true;
-      allow write: if isAdmin() && isValidSettings(request.resource.data);
+      allow write: if (isAdmin() || isStaff('manage_settings')) && isValidSettings(request.resource.data);
     }
 
     // Default deny
