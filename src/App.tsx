@@ -24,6 +24,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { About } from './pages/About';
 import { HowToBook } from './pages/HowToBook';
 import { Contact } from './pages/Contact';
+import { ThankYou } from './pages/ThankYou';
 import { MessageCircle, Loader2 } from 'lucide-react';
 import { settingsService, adminService } from './services/api';
 import { auth, db } from './services/firebase';
@@ -90,6 +91,7 @@ const AppContent = () => {
           <Route path="/about" element={<About />} />
           <Route path="/how-to-book" element={<HowToBook />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </main>
       <Footer />

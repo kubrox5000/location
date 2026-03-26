@@ -66,7 +66,7 @@ export const About = () => {
           { icon: Globe, title: 'Global Reach', desc: 'With locations in every major city, we are wherever you need us to be.' },
         ].map((item, idx) => (
           <div key={idx} className="rounded-3xl border border-primary/10 bg-primary/5 p-8 transition-all hover:shadow-lg">
-            <div className="mb-6 inline-block rounded-2xl bg-white p-4 text-primary shadow-sm border border-primary/10">
+            <div className="mb-6 inline-block rounded-2xl bg-primary p-4 text-white shadow-lg shadow-primary/20 border border-primary/50">
               <item.icon size={28} />
             </div>
             <h3 className="serif text-xl font-light text-foreground">{item.title}</h3>

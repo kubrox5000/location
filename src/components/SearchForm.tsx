@@ -42,7 +42,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
       className="grid grid-cols-1 gap-4 rounded-[3rem] glass p-4 sm:p-6 shadow-2xl shadow-black/5 lg:grid-cols-5 lg:gap-4 xl:gap-6 border border-black/5"
     >
       <div className="relative group">
-        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-foreground/20 transition-colors group-focus-within:text-primary">
+        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-primary transition-colors">
           <MapPin size={18} className="xl:w-5 xl:h-5" />
         </div>
         <select
@@ -64,7 +64,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
       </div>
 
       <div className="relative group">
-        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-foreground/20 transition-colors group-focus-within:text-primary">
+        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-primary transition-colors">
           <Calendar size={18} className="xl:w-5 xl:h-5" />
         </div>
         <input
@@ -77,7 +77,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
       </div>
 
       <div className="relative group">
-        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-foreground/20 transition-colors group-focus-within:text-primary">
+        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-primary transition-colors">
           <Calendar size={18} className="xl:w-5 xl:h-5" />
         </div>
         <input
@@ -90,7 +90,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
       </div>
 
       <div className="relative group">
-        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-foreground/20 transition-colors group-focus-within:text-primary">
+        <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-primary transition-colors">
           <CarIcon size={18} className="xl:w-5 xl:h-5" />
         </div>
         <select

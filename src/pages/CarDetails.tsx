@@ -132,7 +132,16 @@ export const CarDetails = () => {
     try {
       await bookingService.create(bookingData);
       toast.success(t('carDetails.success'));
-      setBookingOption(null);
+      navigate('/thank-you', { 
+        state: { 
+          bookingData, 
+          carData: { 
+            brand: car.brand, 
+            name: car.name, 
+            currency: settings?.currency 
+          } 
+        } 
+      });
     } catch (error: any) {
       toast.error(error.message || t('carDetails.errorBooking'));
     }
@@ -151,7 +160,7 @@ export const CarDetails = () => {
       <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
         <button
           onClick={() => navigate(-1)}
-          className="mb-8 flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] text-foreground/40 transition-colors hover:text-primary"
+          className="mb-8 flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] text-primary transition-colors hover:text-primary/80"
         >
           <ChevronLeft size={20} className="rtl:rotate-180" />
           {t('carDetails.back')}
@@ -202,7 +211,7 @@ export const CarDetails = () => {
                 { icon: MapPin, label: t('carDetails.specs.cities'), value: car.cities.join(', ') },
               ].map((spec, idx) => (
                 <div key={idx} className="group flex flex-col items-center rounded-[2rem] glass p-8 text-center border border-black/5 transition-all hover:bg-black/5 hover:border-primary/30">
-                  <div className="mb-4 rounded-2xl bg-primary/10 p-4 text-primary transition-transform group-hover:scale-110 group-hover:rotate-6">
+                  <div className="mb-4 rounded-2xl bg-primary p-4 text-white shadow-lg shadow-primary/20 transition-transform group-hover:scale-110 group-hover:rotate-6">
                     <spec.icon size={24} />
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">{spec.label}</span>
@@ -213,7 +222,7 @@ export const CarDetails = () => {
 
             <div className="rounded-[3rem] glass p-8 sm:p-10 border border-black/5 shadow-2xl shadow-black/10">
               <h3 className="flex items-center gap-4 text-2xl font-black uppercase tracking-tighter text-foreground">
-                <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                <div className="rounded-2xl bg-primary p-3 text-white shadow-lg shadow-primary/20">
                   <Info size={24} />
                 </div>
                 {t('carDetails.description')}
@@ -232,7 +241,7 @@ export const CarDetails = () => {
                   t('carDetails.features.cancellation')
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-4 text-sm font-bold text-foreground/60 glass p-4 rounded-2xl border border-black/5">
-                    <div className="rounded-full bg-primary/20 p-1.5 text-primary">
+                    <div className="rounded-full bg-primary p-1.5 text-white shadow-sm shadow-primary/20">
                       <CheckCircle2 size={16} />
                     </div>
                     {item}
@@ -279,37 +288,41 @@ export const CarDetails = () => {
                       <p className="text-lg text-foreground/40 font-light leading-relaxed">{t('carDetails.methodDesc')}</p>
                     </div>
                     
-                    <div className="space-y-5">
+                    <div className="space-y-3">
                       <button
                         onClick={() => setBookingOption('website')}
-                        className="flex w-full items-center justify-between rounded-3xl bg-primary p-6 transition-all hover:bg-primary/90 group shadow-xl shadow-primary/20 active:scale-[0.98]"
+                        className="flex w-full items-center justify-between rounded-2xl bg-primary p-4 transition-all hover:bg-primary/90 group shadow-lg shadow-primary/10 active:scale-[0.98]"
                       >
-                        <div className="flex items-center gap-6">
-                          <div className="rounded-2xl bg-white/20 p-4 text-white shadow-inner transition-all group-hover:scale-110 group-hover:bg-white/30">
-                            <CreditCard size={28} />
+                        <div className="flex items-center gap-4">
+                          <div className="rounded-xl bg-white/20 p-3 text-white shadow-inner transition-all group-hover:scale-110 group-hover:bg-white/30">
+                            <CreditCard size={20} />
                           </div>
                           <div className="text-left">
-                            <p className="font-black text-sm text-white uppercase tracking-widest">{t('carDetails.bookWebsite')}</p>
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/60 mt-2 font-bold">{t('carDetails.websiteDesc')}</p>
+                            <p className="font-black text-xs text-white uppercase tracking-widest">{t('carDetails.bookWebsite')}</p>
+                            {t('carDetails.websiteDesc') && (
+                              <p className="text-[9px] uppercase tracking-[0.15em] text-white/60 mt-1 font-bold">{t('carDetails.websiteDesc')}</p>
+                            )}
                           </div>
                         </div>
-                        <ChevronLeft size={24} className="rotate-180 text-white/40 group-hover:text-white transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
+                        <ChevronLeft size={18} className="rotate-180 text-white/40 group-hover:text-white transition-transform group-hover:translate-x-1 rtl:rotate-0 rtl:group-hover:-translate-x-1" />
                       </button>
 
                       <button
                         onClick={handleWhatsAppBooking}
-                        className="flex w-full items-center justify-between rounded-3xl bg-primary p-6 transition-all hover:bg-primary/90 group shadow-xl shadow-primary/20 active:scale-[0.98]"
+                        className="flex w-full items-center justify-between rounded-2xl bg-primary p-4 transition-all hover:bg-primary/90 group shadow-lg shadow-primary/10 active:scale-[0.98]"
                       >
-                        <div className="flex items-center gap-6">
-                          <div className="rounded-2xl bg-white/20 p-4 text-white shadow-inner transition-all group-hover:scale-110 group-hover:bg-white/30">
-                            <MessageCircle size={28} />
+                        <div className="flex items-center gap-4">
+                          <div className="rounded-xl bg-white/20 p-3 text-white shadow-inner transition-all group-hover:scale-110 group-hover:bg-white/30">
+                            <MessageCircle size={20} />
                           </div>
                           <div className="text-left">
-                            <p className="font-black text-sm text-white uppercase tracking-widest">{t('carDetails.bookWhatsapp')}</p>
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/60 mt-2 font-bold">{t('carDetails.whatsappDesc')}</p>
+                            <p className="font-black text-xs text-white uppercase tracking-widest">{t('carDetails.bookWhatsapp')}</p>
+                            {t('carDetails.whatsappDesc') && (
+                              <p className="text-[9px] uppercase tracking-[0.15em] text-white/60 mt-1 font-bold">{t('carDetails.whatsappDesc')}</p>
+                            )}
                           </div>
                         </div>
-                        <ChevronLeft size={24} className="rotate-180 text-white/40 group-hover:text-white transition-transform group-hover:translate-x-2 rtl:rotate-0 rtl:group-hover:-translate-x-2" />
+                        <ChevronLeft size={18} className="rotate-180 text-white/40 group-hover:text-white transition-transform group-hover:translate-x-1 rtl:rotate-0 rtl:group-hover:-translate-x-1" />
                       </button>
                     </div>
                   </div>
@@ -343,7 +356,7 @@ export const CarDetails = () => {
                         <input
                           required
                           type="tel"
-                          placeholder="+1 (555) 000-0000"
+                          placeholder="+212674740010"
                           className="mt-3 w-full rounded-2xl border border-black/5 bg-black/5 px-6 py-5 text-sm font-bold text-foreground outline-none transition-all focus:bg-black/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 tracking-wide"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}

@@ -99,7 +99,7 @@ export const Home = () => {
     const fetchCars = async () => {
       try {
         const data = await carService.getAll();
-        setFeaturedCars(data.slice(0, 3));
+        setFeaturedCars(data);
       } catch (error) {
         console.error('Failed to fetch cars:', error);
       } finally {
@@ -261,35 +261,42 @@ export const Home = () => {
         </div>
         
         <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 relative z-10">
-          <div className="mb-12 flex flex-col items-end justify-between gap-10 md:flex-row rtl:flex-row-reverse relative">
-            <div className="max-w-2xl rtl:text-right">
+          <div className="mb-16 flex flex-col items-center text-center gap-10 relative">
+            <div className="max-w-3xl">
               <span className="mb-6 inline-block text-[11px] font-black uppercase tracking-[0.4em] text-primary">
                 {t('home.collection.tag')}
               </span>
               <h2 className="serif text-6xl font-black text-foreground leading-tight">
                 {t('home.collection.title')}
               </h2>
-              <p className="mt-8 text-xl font-light text-foreground/40 leading-relaxed max-w-xl">
+              <p className="mt-8 text-xl font-light text-foreground/40 leading-relaxed mx-auto max-w-xl">
                 {t('home.collection.subtitle')}
               </p>
             </div>
 
-              <div className="flex flex-col items-center md:items-end gap-12 relative">
-                {/* Decorative Floating Image */}
-                <Link
-                  to="/cars"
-                  className="group flex items-center gap-6 rounded-full border border-primary bg-primary px-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-primary/90 shadow-2xl shadow-primary/30 relative z-10 whitespace-nowrap"
-                >
-                  {t('home.collection.cta')}
-                  <ChevronRight size={20} className="rtl:rotate-180 transition-transform group-hover:translate-x-2" />
-                </Link>
-              </div>
+            <div className="flex flex-col items-center gap-12 relative">
+              <Link
+                to="/cars"
+                className="group flex items-center gap-6 rounded-full border border-primary bg-primary px-10 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-primary/90 shadow-2xl shadow-primary/30 relative z-10 whitespace-nowrap"
+              >
+                {t('home.collection.cta')}
+                <ChevronRight size={20} className="rtl:rotate-180 transition-transform group-hover:translate-x-2" />
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredCars.map((car, idx) => (
-              <CarCard key={car.id} car={car} />
-            ))}
+            {featuredCars.length > 0 ? (
+              featuredCars.map((car, idx) => (
+                <CarCard key={car.id} car={car} />
+              ))
+            ) : !loading && (
+              <div className="col-span-full text-center py-20">
+                <p className="text-xl font-light text-foreground/40 italic">
+                  {i18n.language === 'ar' ? 'لا توجد سيارات متاحة حالياً' : 'No cars available at the moment'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -313,7 +320,7 @@ export const Home = () => {
               { icon: Zap, title: t('home.process.step3.title'), desc: t('home.process.step3.desc') }
             ].map((step, idx) => (
               <div key={idx} className="relative group text-center">
-                <div className="mb-10 mx-auto flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-primary/10 text-primary shadow-2xl shadow-primary/5 border border-primary/20 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
+                <div className="mb-10 mx-auto flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-primary text-white shadow-2xl shadow-primary/20 border border-primary/50 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
                   <step.icon size={36} />
                 </div>
                 <h4 className="text-2xl font-black text-foreground mb-6 tracking-tight">{step.title}</h4>
@@ -349,7 +356,7 @@ export const Home = () => {
           <div className="mt-16 space-y-12">
             {(t('home.experience.steps', { returnObjects: true }) as any[]).map((item, idx) => (
               <div key={idx} className="flex gap-8 rtl:flex-row-reverse group">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-sm font-black text-primary shadow-lg shadow-primary/5 transition-all group-hover:scale-110">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-sm font-black text-white shadow-lg shadow-primary/20 transition-all group-hover:scale-110">
                   0{idx + 1}
                 </div>
                 <div>
@@ -380,7 +387,7 @@ export const Home = () => {
               >
                 <div className="mb-10 flex justify-center gap-1.5">
                   {[1,2,3,4,5].map(i => (
-                    <Star key={i} className="text-primary" size={20} fill="currentColor" />
+                    <Star key={i} className="text-accent" size={20} fill="currentColor" />
                   ))}
                 </div>
 

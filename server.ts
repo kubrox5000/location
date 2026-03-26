@@ -72,7 +72,7 @@ async function startServer() {
   ];
 
   let bookings = [
-    { id: '1', customerName: 'John Doe', carId: '1', pickupDate: '2024-03-21', returnDate: '2024-03-25', status: 'Confirmed', totalPrice: 600, phone: '+15551234567', city: 'Los Angeles', createdAt: new Date().toISOString() },
+    { id: '1', customerName: 'John Doe', carId: '1', pickupDate: '2024-03-21', returnDate: '2024-03-25', status: 'Confirmed', totalPrice: 600, phone: '+212674740010', city: 'Los Angeles', createdAt: new Date().toISOString() },
   ];
 
   let cities = ['New York', 'Los Angeles', 'Chicago', 'Miami', 'San Francisco', 'Seattle'];
@@ -80,8 +80,8 @@ async function startServer() {
   let settings = {
     id: '1',
     email: 'concierge@driveselect.com',
-    phone: '+1 (555) 123-4567',
-    whatsapp: '+15551234561',
+    phone: '+212674740010',
+    whatsapp: '+212674740010',
     address: '123 Mobility Avenue, San Francisco, CA 94103',
     addressAr: '١٢٣ شارع التنقل، سان فرانسيسكو، كاليفورنيا ٩٤١٠٣',
     updatedAt: new Date().toISOString(),

@@ -28,7 +28,7 @@ export const Contact = () => {
   };
 
   const contactItems = [
-    { icon: Phone, label: 'Phone', value: settings?.phone || '+1 (555) 123-4567', color: 'text-white', bg: 'bg-primary' },
+    { icon: Phone, label: 'Phone', value: settings?.phone || '+212674740010', color: 'text-white', bg: 'bg-primary' },
     { icon: Mail, label: 'Email', value: settings?.email || 'support@driveselect.com', color: 'text-white', bg: 'bg-primary' },
     { icon: MapPin, label: 'Office', value: i18n.language === 'ar' ? settings?.addressAr : settings?.address || '123 Mobility Ave, San Francisco, CA', color: 'text-white', bg: 'bg-primary' },
   ];

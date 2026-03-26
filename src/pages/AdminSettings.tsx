@@ -234,7 +234,7 @@ export const AdminSettings = () => {
               type="text"
               value={settings?.whatsapp || ''}
               onChange={(e) => setSettings(prev => prev ? { ...prev, whatsapp: e.target.value } : null)}
-              placeholder="+15551234567"
+              placeholder="+212674740010"
               className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
               required
             />

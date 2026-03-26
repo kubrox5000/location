@@ -108,7 +108,7 @@ export const Footer = () => {
                 </div>
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/20">{t('footer.callUs')}</p>
-                  <p className="mt-1 text-sm font-bold text-foreground/80 transition-colors group-hover:text-primary" dir="ltr">{settings?.phone || '+1 (555) 123-4567'}</p>
+                  <p className="mt-1 text-sm font-bold text-foreground/80 transition-colors group-hover:text-primary" dir="ltr">{settings?.phone || '+212674740010'}</p>
                 </div>
               </li>
               <li className="flex items-start gap-4 rtl:flex-row-reverse group">
