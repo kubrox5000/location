@@ -10,6 +10,7 @@ import { eachDayOfInterval, format, parseISO, isWithinInterval, startOfDay, addD
 
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../context/SettingsContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const AdminBookings = () => {
   const { t } = useTranslation();
@@ -99,12 +100,15 @@ export const AdminBookings = () => {
     setIsSubmitting(true);
 
     try {
+      const car = cars.find(c => c.id === formData.carId);
+      const carCurrency = car?.currency || settings?.currency || 'USD';
       const totalPrice = calculateTotalPrice();
       const newBooking = await bookingService.create({
         ...formData,
         pickupDate: format(formData.pickupDate, 'yyyy-MM-dd'),
         returnDate: format(formData.returnDate, 'yyyy-MM-dd'),
         totalPrice,
+        currency: carCurrency,
         status: 'Confirmed',
       });
       setBookings([newBooking, ...bookings]);
@@ -172,13 +176,16 @@ export const AdminBookings = () => {
           <h1 className="serif text-2xl font-light tracking-tight text-foreground">{t('admin.bookings.title')}</h1>
           <p className="text-foreground/60 text-sm font-light">{t('admin.bookings.subtitle')}</p>
         </div>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 active:scale-95"
-        >
-          <Plus size={18} />
-          {t('admin.bookings.addNew')}
-        </button>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 active:scale-95"
+          >
+            <Plus size={18} />
+            {t('admin.bookings.addNew')}
+          </button>
+        </div>
       </div>
 
       <div className="rounded-3xl border border-primary/10 bg-white shadow-sm overflow-hidden">
@@ -223,11 +230,20 @@ export const AdminBookings = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 font-bold text-foreground">
-                    {settings?.currency === 'MAD' ? `${booking.totalPrice} DH` : `$${booking.totalPrice}`}
+                    {(() => {
+                      const currency = booking.currency || settings?.currency || 'USD';
+                      const symbol = currency === 'MAD' ? 'DH' : 
+                                    currency === 'AED' ? 'AED' : 
+                                    currency === 'SAR' ? 'SR' : 
+                                    currency === 'EUR' ? '€' : '$';
+                      return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                        ? `${booking.totalPrice} ${symbol}` 
+                        : `${symbol}${booking.totalPrice}`;
+                    })()}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                      booking.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-600' : 
+                      booking.status === 'Confirmed' ? 'bg-primary/10 text-primary' : 
                       booking.status === 'Pending' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'
                     }`}>
                       {booking.status === 'Confirmed' ? t('admin.bookings.status.confirmed') : 
@@ -240,14 +256,14 @@ export const AdminBookings = () => {
                         <>
                           <button 
                             onClick={() => updateStatus(booking.id, 'Confirmed')}
-                            className="rounded-lg p-2 text-emerald-500 hover:bg-emerald-50 transition-all"
+                            className="rounded-lg p-2 text-primary hover:bg-primary/10 transition-all"
                             title={t('admin.bookings.actions.confirm')}
                           >
                             <CheckCircle size={18} />
                           </button>
                           <button 
                             onClick={() => updateStatus(booking.id, 'Cancelled')}
-                            className="rounded-lg p-2 text-red-500 hover:bg-red-50 transition-all"
+                            className="rounded-lg p-2 text-primary hover:bg-primary/10 transition-all"
                             title={t('admin.bookings.actions.cancel')}
                           >
                             <XCircle size={18} />
@@ -256,7 +272,7 @@ export const AdminBookings = () => {
                       )}
                       <button 
                         onClick={() => setSelectedBooking(booking)}
-                        className="rounded-lg p-2 text-foreground/30 hover:bg-primary/10 hover:text-primary transition-all"
+                        className="rounded-lg p-2 text-primary hover:bg-primary/10 transition-all"
                         title={t('admin.bookings.actions.viewDetails')}
                       >
                         <Eye size={18} />
@@ -305,7 +321,7 @@ export const AdminBookings = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.bookings.modal.customerName')}</label>
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                       <input
                         required
                         type="text"
@@ -320,7 +336,7 @@ export const AdminBookings = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.bookings.modal.phone')}</label>
                     <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                       <input
                         required
                         type="tel"
@@ -335,7 +351,7 @@ export const AdminBookings = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.bookings.modal.selectVehicle')}</label>
                     <div className="relative">
-                      <CarIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
+                      <CarIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                       <select
                         required
                         className="w-full appearance-none rounded-xl border border-primary/10 bg-primary/5 py-3 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
@@ -345,7 +361,16 @@ export const AdminBookings = () => {
                         <option value="">{t('admin.bookings.modal.chooseCar')}</option>
                         {cars.map(car => (
                           <option key={car.id} value={car.id}>
-                            {car.brand} {car.name} ({settings?.currency === 'MAD' ? `${car.pricePerDay} DH` : `$${car.pricePerDay}`}/{t('admin.bookings.day')})
+                            {car.brand} {car.name} ({(() => {
+                              const currency = car.currency || settings?.currency || 'USD';
+                              const symbol = currency === 'MAD' ? 'DH' : 
+                                            currency === 'AED' ? 'AED' : 
+                                            currency === 'SAR' ? 'SR' : 
+                                            currency === 'EUR' ? '€' : '$';
+                              return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                                ? `${car.pricePerDay} ${symbol}` 
+                                : `${symbol}${car.pricePerDay}`;
+                            })()}/{t('admin.bookings.day')})
                           </option>
                         ))}
                       </select>
@@ -355,7 +380,7 @@ export const AdminBookings = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.bookings.modal.selectCity')}</label>
                     <div className="relative">
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                       <select
                         required
                         className="w-full appearance-none rounded-xl border border-primary/10 bg-primary/5 py-3 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
@@ -373,7 +398,7 @@ export const AdminBookings = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.bookings.modal.pickupDate')}</label>
                     <div className="relative">
-                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30 z-10" size={18} />
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600 z-10" size={18} />
                       <DatePicker
                         required
                         selected={formData.pickupDate}
@@ -392,7 +417,7 @@ export const AdminBookings = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.bookings.modal.returnDate')}</label>
                     <div className="relative">
-                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30 z-10" size={18} />
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600 z-10" size={18} />
                       <DatePicker
                         required
                         selected={formData.returnDate}
@@ -507,7 +532,16 @@ export const AdminBookings = () => {
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">{t('admin.bookings.table.total')}</p>
                     <p className="text-xl font-black text-primary">
-                      {settings?.currency === 'MAD' ? `${selectedBooking.totalPrice} DH` : `$${selectedBooking.totalPrice}`}
+                      {(() => {
+                        const currency = selectedBooking.currency || settings?.currency || 'USD';
+                        const symbol = currency === 'MAD' ? 'DH' : 
+                                      currency === 'AED' ? 'AED' : 
+                                      currency === 'SAR' ? 'SR' : 
+                                      currency === 'EUR' ? '€' : '$';
+                        return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                          ? `${selectedBooking.totalPrice} ${symbol}` 
+                          : `${symbol}${selectedBooking.totalPrice}`;
+                      })()}
                     </p>
                   </div>
                 </div>
@@ -515,7 +549,7 @@ export const AdminBookings = () => {
                 <div className="pt-4 border-t border-primary/10">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/30 mb-2">{t('admin.bookings.table.status')}</p>
                   <span className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider ${
-                    selectedBooking.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-600' : 
+                    selectedBooking.status === 'Confirmed' ? 'bg-primary/10 text-primary' : 
                     selectedBooking.status === 'Pending' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'
                   }`}>
                     {selectedBooking.status === 'Confirmed' ? t('admin.bookings.status.confirmed') : 
@@ -563,12 +597,21 @@ export const AdminBookings = () => {
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between border-t border-primary/5 pt-4">
-                <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500">
+                <div className="flex items-center gap-1 text-[10px] font-bold text-primary">
                   <CheckCircle size={12} />
                   {t('admin.bookings.available')}
                 </div>
                 <p className="text-sm font-black text-foreground">
-                  {settings?.currency === 'MAD' ? `${car.pricePerDay} DH` : `$${car.pricePerDay}`}/{t('admin.bookings.day')}
+                  {(() => {
+                    const currency = car.currency || settings?.currency || 'USD';
+                    const symbol = currency === 'MAD' ? 'DH' : 
+                                  currency === 'AED' ? 'AED' : 
+                                  currency === 'SAR' ? 'SR' : 
+                                  currency === 'EUR' ? '€' : '$';
+                    return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                      ? `${car.pricePerDay} ${symbol}` 
+                      : `${symbol}${car.pricePerDay}`;
+                  })()}/{t('admin.bookings.day')}
                 </p>
               </div>
             </div>

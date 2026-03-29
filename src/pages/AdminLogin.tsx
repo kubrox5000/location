@@ -80,7 +80,7 @@ export const AdminLogin = () => {
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">Email Address</label>
               <div className="relative mt-1">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                 <input
                   required
                   type="email"
@@ -94,7 +94,7 @@ export const AdminLogin = () => {
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">Password</label>
               <div className="relative mt-1">
-                <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40" size={18} />
+                <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                 <input
                   required
                   type="password"

@@ -24,11 +24,11 @@ export const LanguageSwitcher = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-full border border-primary/10 bg-white/50 px-3 py-1.5 text-xs font-bold text-foreground backdrop-blur-sm transition-all hover:bg-primary/5 active:scale-95"
+        className="flex items-center gap-2 rounded-full border border-primary/10 bg-white px-3 py-1.5 text-xs font-bold text-foreground transition-all hover:bg-primary/5 active:scale-95"
       >
-        <Globe size={14} className="text-primary" />
+        <Globe size={14} className="text-green-600" />
         <span>{currentLanguage.name}</span>
-        <ChevronDown size={12} className={`text-primary/40 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={12} className={`text-green-600 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>

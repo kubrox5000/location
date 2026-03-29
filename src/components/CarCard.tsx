@@ -18,10 +18,11 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
   const translatedTransmission = t(`admin.fleet.options.transmissions.${car.transmission.toLowerCase()}`);
   const translatedFuel = t(`admin.fleet.options.fuels.${car.fuelType.toLowerCase()}`);
 
-  const currencySymbol = settings?.currency === 'MAD' ? 'DH' : 
-                        settings?.currency === 'EUR' ? '€' : 
-                        settings?.currency === 'AED' ? 'AED' :
-                        settings?.currency === 'SAR' ? 'SR' : '$';
+  const currency = car.currency || settings?.currency || 'USD';
+  const currencySymbol = currency === 'MAD' ? 'DH' : 
+                        currency === 'EUR' ? '€' : 
+                        currency === 'AED' ? 'AED' :
+                        currency === 'SAR' ? 'SR' : '$';
 
   return (
     <motion.div
@@ -49,8 +50,8 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
         
         <div className="absolute bottom-6 start-6">
           <p className="serif text-2xl font-black text-primary transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 translate-y-4">
-            {settings?.currency === 'MAD' ? (
-              <>{car.pricePerDay} <span className="text-sm">DH</span></>
+            {currency === 'MAD' || currency === 'AED' || currency === 'SAR' ? (
+              <>{car.pricePerDay} <span className="text-sm">{currencySymbol}</span></>
             ) : (
               <>{currencySymbol}{car.pricePerDay}</>
             )}

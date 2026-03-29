@@ -110,7 +110,16 @@ export const ThankYou = () => {
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">{t('thankYou.totalPrice')}</p>
                 <div className="flex items-center gap-2 text-2xl font-black text-primary">
                   <CreditCard size={20} />
-                  {bookingData.totalPrice} {carData.currency || 'USD'}
+                  {(() => {
+                    const currency = carData.currency || settings?.currency || 'USD';
+                    const symbol = currency === 'MAD' ? 'DH' : 
+                                  currency === 'AED' ? 'AED' : 
+                                  currency === 'SAR' ? 'SR' : 
+                                  currency === 'EUR' ? '€' : '$';
+                    return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                      ? `${bookingData.totalPrice} ${symbol}` 
+                      : `${symbol}${bookingData.totalPrice}`;
+                  })()}
                 </div>
               </div>
             </div>
@@ -157,7 +166,7 @@ export const ThankYou = () => {
               </button>
               <button
                 onClick={handleWhatsApp}
-                className="flex flex-1 items-center justify-center gap-3 rounded-2xl bg-emerald-500 px-8 py-5 text-xs font-black uppercase tracking-[0.3em] text-white shadow-xl shadow-emerald-500/20 transition-all hover:bg-emerald-600 hover:scale-105 active:scale-95"
+                className="flex flex-1 items-center justify-center gap-3 rounded-2xl bg-primary px-8 py-5 text-xs font-black uppercase tracking-[0.3em] text-white shadow-xl shadow-primary/20 transition-all hover:bg-primary/90 hover:scale-105 active:scale-95"
               >
                 <MessageCircle size={18} />
                 {t('thankYou.whatsapp')}

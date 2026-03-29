@@ -32,7 +32,7 @@ export const Navbar = ({ settings }: { settings: Settings | null }) => {
 
   return (
     <nav 
-      className={`fixed top-0 z-50 w-full transition-all duration-500 glass border-b border-black/5 ${
+      className={`fixed top-0 z-50 w-full transition-all duration-500 bg-white border-b border-black/5 ${
         scrolled 
           ? 'py-2 shadow-2xl' 
           : 'py-4 shadow-lg'
@@ -98,7 +98,7 @@ export const Navbar = ({ settings }: { settings: Settings | null }) => {
             <LanguageSwitcher />
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center rounded-xl p-2 transition-all text-foreground hover:bg-black/10 bg-black/5 backdrop-blur-md border border-black/10"
+              className="inline-flex items-center justify-center rounded-xl p-2 transition-all text-foreground hover:bg-black/10 bg-gray-100 border border-black/10"
             >
               {isOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -113,7 +113,7 @@ export const Navbar = ({ settings }: { settings: Settings | null }) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="absolute top-full left-0 w-full overflow-hidden border-b border-black/10 glass lg:hidden"
+            className="absolute top-full left-0 w-full overflow-hidden border-b border-black/10 bg-white lg:hidden"
           >
             <div className="space-y-2 px-6 pb-12 pt-8">
               {navLinks.map((link) => (

@@ -124,7 +124,7 @@ export const CarListing = () => {
                       </button>
                       {loadingCities ? (
                         <div className="flex justify-center py-6">
-                          <Loader2 size={24} className="animate-spin text-primary/40" />
+                          <Loader2 size={24} className="animate-spin text-primary" />
                         </div>
                       ) : (
                         cities.map((city) => (

@@ -11,6 +11,7 @@ export interface Car {
   seats: number;
   doors: number;
   airConditioning: boolean;
+  currency?: string;
   availability: {
     [date: string]: boolean; // date string YYYY-MM-DD
   };
@@ -27,6 +28,7 @@ export interface Booking {
   returnDate: string;
   status: 'Pending' | 'Confirmed' | 'Cancelled';
   totalPrice: number;
+  currency?: string;
   createdAt: string;
 }
 
@@ -47,6 +49,7 @@ export interface Settings {
   logo?: string;
   favicon?: string;
   heroImage?: string;
+  heroImageMobile?: string;
   ctaImage?: string;
   experienceImage?: string;
   currency?: string;

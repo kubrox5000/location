@@ -39,7 +39,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
   return (
     <form 
       onSubmit={handleSubmit}
-      className="grid grid-cols-1 gap-4 rounded-[3rem] glass p-4 sm:p-6 shadow-2xl shadow-black/5 lg:grid-cols-5 lg:gap-4 xl:gap-6 border border-black/5"
+      className="grid grid-cols-1 gap-4 rounded-[3rem] bg-white sm:glass p-4 sm:p-6 shadow-2xl shadow-black/5 lg:grid-cols-5 lg:gap-4 xl:gap-6 border border-black/5"
     >
       <div className="relative group">
         <div className="absolute inset-y-0 start-4 xl:start-5 flex items-center text-primary transition-colors">
@@ -58,7 +58,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
         </select>
         {loadingCities && (
           <div className="absolute inset-y-0 end-4 xl:end-6 flex items-center">
-            <Loader2 size={14} className="animate-spin text-primary/40 xl:w-4 xl:h-4" />
+            <Loader2 size={14} className="animate-spin text-primary xl:w-4 xl:h-4" />
           </div>
         )}
       </div>

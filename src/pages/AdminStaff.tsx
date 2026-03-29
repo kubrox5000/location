@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { motion, AnimatePresence } from 'motion/react';
 import { Users, Shield, Trash2, Check, X, Loader2, Plus, Mail, Key } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -140,13 +141,16 @@ export const AdminStaff = () => {
           <h1 className="serif text-3xl font-light text-foreground">{t('admin.staff.title')}</h1>
           <p className="mt-2 text-sm text-foreground/50">{t('admin.staff.subtitle')}</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-black text-primary-foreground shadow-lg transition-all hover:bg-primary/90 active:scale-95"
-        >
-          <Plus size={20} />
-          {t('admin.staff.create.button')}
-        </button>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-black text-primary-foreground shadow-lg transition-all hover:bg-primary/90 active:scale-95"
+          >
+            <Plus size={20} />
+            {t('admin.staff.create.button')}
+          </button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-xl">
@@ -218,7 +222,7 @@ export const AdminStaff = () => {
                     <button
                       onClick={() => handleDelete(user.uid)}
                       disabled={updating === user.uid}
-                      className="rounded-xl p-2 text-emerald-600/40 transition-all hover:bg-emerald-600/10 hover:text-emerald-600 disabled:opacity-50"
+                      className="rounded-xl p-2 text-primary transition-all hover:bg-primary/10 hover:text-primary disabled:opacity-50"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -255,7 +259,7 @@ export const AdminStaff = () => {
                   <div>
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.staff.create.email')}</label>
                     <div className="relative mt-1">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40" size={18} />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                       <input
                         required
                         type="email"
@@ -268,7 +272,7 @@ export const AdminStaff = () => {
                   <div>
                     <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.staff.create.password')}</label>
                     <div className="relative mt-1">
-                      <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40" size={18} />
+                      <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
                       <input
                         required
                         type="password"
@@ -355,7 +359,7 @@ export const AdminStaff = () => {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="relative w-full max-w-sm overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl"
             >
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 mx-auto">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mx-auto">
                 <Trash2 size={32} />
               </div>
               <h2 className="serif text-center text-2xl font-light text-foreground mb-2">
@@ -374,7 +378,7 @@ export const AdminStaff = () => {
                 <button
                   onClick={confirmDelete}
                   disabled={updating !== null}
-                  className="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-emerald-700 disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-primary/90 disabled:opacity-50"
                 >
                   {updating !== null ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : t('admin.staff.delete')}
                 </button>

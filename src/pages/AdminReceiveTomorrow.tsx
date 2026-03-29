@@ -4,6 +4,7 @@ import { Booking, Car } from '../types';
 import { Clock, MapPin, Phone, User, Calendar, Search, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format, addDays, startOfDay, parseISO } from 'date-fns';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const AdminReceiveTomorrow = () => {
   const [bookings, setBookings] = React.useState<Booking[]>([]);
@@ -74,15 +75,18 @@ export const AdminReceiveTomorrow = () => {
           </p>
         </div>
         
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
-          <input
-            type="text"
-            placeholder="Search by customer or car..."
-            className="w-full rounded-xl border border-primary/10 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 text-foreground sm:w-64"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary" size={18} />
+            <input
+              type="text"
+              placeholder="Search by customer or car..."
+              className="w-full rounded-xl border border-primary/10 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 text-foreground sm:w-64"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -111,26 +115,26 @@ export const AdminReceiveTomorrow = () => {
               <div className="space-y-3 border-t border-primary/5 pt-4">
                 <div className="flex items-center gap-3 text-sm text-foreground/60 font-light">
                   <div className="rounded-lg bg-primary/5 p-1.5">
-                    <User size={14} className="text-foreground/30" />
+                    <User size={14} className="text-primary" />
                   </div>
                   <span className="font-bold text-foreground">{booking.customerName}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-foreground/60 font-light">
                   <div className="rounded-lg bg-primary/5 p-1.5">
-                    <Phone size={14} className="text-foreground/30" />
+                    <Phone size={14} className="text-primary" />
                   </div>
                   <span>{booking.phone}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-foreground/60 font-light">
                   <div className="rounded-lg bg-primary/5 p-1.5">
-                    <MapPin size={14} className="text-foreground/30" />
+                    <MapPin size={14} className="text-primary" />
                   </div>
                   <span>{booking.city}</span>
                 </div>
               </div>
 
               <div className="mt-6 flex items-center justify-between border-t border-primary/5 pt-4">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-primary">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-green-600">
                   <Clock size={14} />
                   Return Tomorrow
                 </div>
@@ -147,7 +151,7 @@ export const AdminReceiveTomorrow = () => {
 
         {carsToReceiveTomorrow.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-primary/10 p-20 text-center">
-            <div className="rounded-full bg-primary/5 p-4 text-foreground/30">
+            <div className="rounded-full bg-primary/5 p-4 text-green-600">
               <Clock size={48} />
             </div>
             <h3 className="mt-4 serif text-lg font-light text-foreground">No Returns Tomorrow</h3>

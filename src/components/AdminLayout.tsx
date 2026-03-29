@@ -7,7 +7,6 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from './LanguageSwitcher';
 import { adminService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -39,13 +38,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Mobile Header */}
       <div className="fixed top-0 left-0 right-0 z-40 flex h-16 items-center justify-between border-b border-primary/10 bg-white px-4 lg:hidden">
         <Link to="/" className="flex items-center gap-2">
-          <div className="rounded-lg bg-primary p-1.5 text-primary-foreground shadow-lg shadow-primary/20">
+          <div className="rounded-lg bg-white border border-primary/10 p-1.5 text-primary shadow-sm">
             <Car size={16} />
           </div>
           <span className="serif text-lg font-light tracking-tight text-foreground">Drive<span className="text-primary">Admin</span></span>
         </Link>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="rounded-lg bg-primary/5 p-2 text-primary"
@@ -70,14 +68,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div className="flex h-full flex-col">
           <div className="flex h-20 items-center justify-between border-b border-primary/10 px-6">
             <Link to="/" className="flex items-center gap-2">
-              <div className="rounded-lg bg-primary p-1.5 text-primary-foreground shadow-lg shadow-primary/20">
+              <div className="rounded-lg bg-white border border-primary/10 p-1.5 text-primary shadow-sm">
                 <Car size={20} />
               </div>
               <span className="serif text-xl font-light tracking-tight text-foreground">Drive<span className="text-primary">Admin</span></span>
             </Link>
-            <div className="hidden lg:block">
-              <LanguageSwitcher />
-            </div>
           </div>
 
           <nav className="mt-8 flex-1 space-y-1 overflow-y-auto px-3">
@@ -92,7 +87,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                     : 'text-foreground/40 hover:bg-primary/5 hover:text-primary'
                 }`}
               >
-                <item.icon size={20} />
+                <item.icon size={20} className={location.pathname === item.path ? '' : (item.icon === Calendar ? 'text-green-600' : 'text-primary')} />
                 {item.name}
               </Link>
             ))}

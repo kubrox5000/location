@@ -80,6 +80,15 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
+.hd-image {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  filter: contrast(1.02) brightness(1.02) saturate(1.03);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;

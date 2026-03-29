@@ -4,6 +4,7 @@ import { cityService } from '../services/api';
 import { motion, AnimatePresence } from 'motion/react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const AdminCities = () => {
   const { t } = useTranslation();
@@ -66,15 +67,18 @@ export const AdminCities = () => {
 
   return (
     <div className="max-w-4xl space-y-8">
-      <div>
-        <h1 className="serif text-2xl font-light tracking-tight text-foreground">{t('admin.cities.title')}</h1>
-        <p className="text-foreground/60 text-sm font-light">{t('admin.cities.subtitle')}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="serif text-2xl font-light tracking-tight text-foreground">{t('admin.cities.title')}</h1>
+          <p className="text-foreground/60 text-sm font-light">{t('admin.cities.subtitle')}</p>
+        </div>
+        <LanguageSwitcher />
       </div>
 
       <div className="rounded-3xl border border-primary/10 bg-white p-8 shadow-sm">
         <form onSubmit={handleAddCity} className="flex gap-4">
           <div className="relative flex-1">
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={18} />
             <input
               type="text"
               placeholder={t('admin.cities.placeholder')}
@@ -115,7 +119,7 @@ export const AdminCities = () => {
                   </div>
                   <button
                     onClick={() => setCityToDelete(city)}
-                    className="rounded-lg p-2 text-foreground/30 transition-all hover:bg-red-50 hover:text-red-600 lg:opacity-0 lg:group-hover:opacity-100"
+                    className="rounded-lg p-2 text-primary transition-all hover:bg-primary/10 lg:opacity-0 lg:group-hover:opacity-100"
                   >
                     <Trash2 size={16} />
                   </button>

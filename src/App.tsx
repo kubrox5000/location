@@ -99,7 +99,7 @@ const AppContent = () => {
       {/* Global WhatsApp Button */}
       <button
         onClick={handleWhatsApp}
-        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-2xl transition-all hover:scale-110 hover:bg-emerald-600 active:scale-95"
+        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-2xl transition-all hover:scale-110 hover:bg-primary/90 active:scale-95"
         title="Chat with us"
       >
         <MessageCircle size={24} />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { Save, Mail, Phone, MessageCircle, MapPin, Image as ImageIcon, Coins, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { settingsService } from '../services/api';
@@ -77,9 +78,12 @@ export const AdminSettings = () => {
 
   return (
     <div className="mx-auto max-w-4xl p-6">
-      <div className="mb-8">
-        <h1 className="serif text-3xl font-light text-foreground">{t('admin.settings.title')}</h1>
-        <p className="mt-2 text-sm text-foreground/50">{t('admin.settings.subtitle')}</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="serif text-3xl font-light text-foreground">{t('admin.settings.title')}</h1>
+          <p className="mt-2 text-sm text-foreground/50">{t('admin.settings.subtitle')}</p>
+        </div>
+        <LanguageSwitcher />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -146,6 +150,28 @@ export const AdminSettings = () => {
             {settings?.heroImage && (
               <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center overflow-hidden">
                 <img src={settings.heroImage} alt="Hero Preview" className="max-h-32 w-full object-cover" referrerPolicy="no-referrer" />
+              </div>
+            )}
+          </div>
+
+          {/* Hero Image Mobile URL */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <ImageIcon size={16} className="text-primary" />
+                {t('admin.settings.heroImageMobile')}
+              </label>
+              <input
+                type="url"
+                value={settings?.heroImageMobile || ''}
+                onChange={(e) => setSettings(prev => prev ? { ...prev, heroImageMobile: e.target.value } : null)}
+                placeholder="https://example.com/hero-mobile.jpg"
+                className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+            {settings?.heroImageMobile && (
+              <div className="rounded-2xl border border-primary/10 bg-white p-4 flex items-center justify-center overflow-hidden">
+                <img src={settings.heroImageMobile} alt="Hero Mobile Preview" className="max-h-32 w-full object-cover" referrerPolicy="no-referrer" />
               </div>
             )}
           </div>

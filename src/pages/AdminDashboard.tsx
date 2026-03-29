@@ -12,6 +12,7 @@ import { subDays, format, isAfter, startOfDay, parseISO, eachDayOfInterval, addD
 
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../context/SettingsContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const AdminDashboard = () => {
   const { t } = useTranslation();
@@ -67,7 +68,16 @@ export const AdminDashboard = () => {
   const stats = [
     { 
       label: t('admin.dashboard.stats.earnings'), 
-      value: settings?.currency === 'MAD' ? `${totalEarnings.toLocaleString()} DH` : `$${totalEarnings.toLocaleString()}`, 
+      value: (() => {
+        const currency = settings?.currency || 'USD';
+        const symbol = currency === 'MAD' ? 'DH' : 
+                      currency === 'AED' ? 'AED' : 
+                      currency === 'SAR' ? 'SR' : 
+                      currency === 'EUR' ? '€' : '$';
+        return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+          ? `${totalEarnings.toLocaleString()} ${symbol}` 
+          : `${symbol}${totalEarnings.toLocaleString()}`;
+      })(),
       icon: DollarSign, 
       color: 'bg-primary' 
     },
@@ -75,25 +85,25 @@ export const AdminDashboard = () => {
       label: t('admin.dashboard.stats.cars'), 
       value: cars.length.toString(), 
       icon: Car, 
-      color: 'bg-primary/80' 
+      color: 'bg-primary' 
     },
     { 
       label: t('admin.dashboard.stats.bookings'), 
       value: totalBookingsCount.toString(), 
       icon: Calendar, 
-      color: 'bg-primary/60' 
+      color: 'bg-primary' 
     },
     { 
       label: t('admin.dashboard.stats.pending'), 
       value: pendingBookingsCount.toString(), 
       icon: Clock, 
-      color: 'bg-primary/40' 
+      color: 'bg-primary' 
     },
     { 
       label: t('admin.dashboard.stats.completed'), 
       value: completedBookingsCount.toString(), 
       icon: CheckCircle, 
-      color: 'bg-primary/20' 
+      color: 'bg-primary' 
     },
   ];
 
@@ -158,20 +168,22 @@ export const AdminDashboard = () => {
           <p className="text-foreground/60 text-sm font-light">{t('admin.dashboard.subtitle')}</p>
         </div>
 
-        <div className="relative">
-          <button 
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="flex items-center gap-2 rounded-2xl border border-primary/10 bg-white px-4 py-2.5 text-sm font-bold text-foreground shadow-sm transition-all hover:bg-primary/5 active:scale-95"
-          >
-            <Filter size={16} className="text-primary/40" />
-            <span>
-              {timeRange === 'day' ? t('admin.dashboard.today') : 
-               timeRange === 'week' ? t('admin.dashboard.thisWeek') : 
-               timeRange === 'month' ? t('admin.dashboard.thisMonth') : 
-               t('admin.dashboard.lastDays', { days: customDays })}
-            </span>
-            <ChevronDown size={16} className={`text-primary/40 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
-          </button>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <div className="relative">
+            <button 
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2 rounded-2xl border border-primary/10 bg-white px-4 py-2.5 text-sm font-bold text-foreground shadow-sm transition-all hover:bg-primary/5 active:scale-95"
+            >
+              <Filter size={16} className="text-primary" />
+              <span>
+                {timeRange === 'day' ? t('admin.dashboard.today') : 
+                 timeRange === 'week' ? t('admin.dashboard.thisWeek') : 
+                 timeRange === 'month' ? t('admin.dashboard.thisMonth') : 
+                 t('admin.dashboard.lastDays', { days: customDays })}
+              </span>
+              <ChevronDown size={16} className={`text-primary transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
+            </button>
 
           <AnimatePresence>
             {isFilterOpen && (
@@ -229,6 +241,7 @@ export const AdminDashboard = () => {
           </AnimatePresence>
         </div>
       </div>
+    </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {stats.map((stat, idx) => (
@@ -240,7 +253,7 @@ export const AdminDashboard = () => {
             className="group rounded-[2rem] border border-primary/5 bg-white p-6 shadow-sm transition-all hover:shadow-xl hover:shadow-primary/5"
           >
             <div className="flex items-center justify-between">
-              <div className={`rounded-2xl ${stat.color} p-3 text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+              <div className={`rounded-2xl ${stat.color} p-3 text-white shadow-lg shadow-primary/20 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
                 <stat.icon size={24} />
               </div>
               <div className="flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-full">
@@ -271,8 +284,8 @@ export const AdminDashboard = () => {
               <AreaChart data={dynamicData}>
                 <defs>
                   <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -280,8 +293,18 @@ export const AdminDashboard = () => {
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#0f172a', opacity: 0.3 }} />
                 <Tooltip 
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+                  formatter={(value: number) => {
+                    const currency = settings?.currency || 'USD';
+                    const symbol = currency === 'MAD' ? 'DH' : 
+                                  currency === 'AED' ? 'AED' : 
+                                  currency === 'SAR' ? 'SR' : 
+                                  currency === 'EUR' ? '€' : '$';
+                    return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                      ? `${value.toLocaleString()} ${symbol}` 
+                      : `${symbol}${value.toLocaleString()}`;
+                  }}
                 />
-                <Area type="monotone" dataKey="bookings" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorBookings)" />
+                <Area type="monotone" dataKey="bookings" stroke="#22c55e" strokeWidth={3} fillOpacity={1} fill="url(#colorBookings)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -305,8 +328,18 @@ export const AdminDashboard = () => {
                 <Tooltip 
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
                   cursor={{ fill: '#f8fafc' }}
+                  formatter={(value: number) => {
+                    const currency = settings?.currency || 'USD';
+                    const symbol = currency === 'MAD' ? 'DH' : 
+                                  currency === 'AED' ? 'AED' : 
+                                  currency === 'SAR' ? 'SR' : 
+                                  currency === 'EUR' ? '€' : '$';
+                    return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                      ? `${value.toLocaleString()} ${symbol}` 
+                      : `${symbol}${value.toLocaleString()}`;
+                  }}
                 />
-                <Bar dataKey="earnings" fill="#10b981" radius={[8, 8, 0, 0]} barSize={32} />
+                <Bar dataKey="earnings" fill="#22c55e" radius={[8, 8, 0, 0]} barSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -343,7 +376,7 @@ export const AdminDashboard = () => {
             })}
             {bookings.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="rounded-full bg-secondary p-4 text-foreground/20 mb-4">
+                <div className="rounded-full bg-secondary p-4 text-green-600 mb-4">
                   <Calendar size={32} />
                 </div>
                 <p className="text-sm text-foreground/30">{t('admin.dashboard.noBookings')}</p>
@@ -359,7 +392,7 @@ export const AdminDashboard = () => {
             <h3 className="serif text-xl font-light text-foreground">{t('admin.dashboard.availableToday')}</h3>
             <button 
               onClick={() => window.location.href = '/admin/available-cars'}
-              className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors"
+              className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary transition-colors"
             >
               {t('admin.dashboard.viewAll')}
               <ChevronDown size={14} className="-rotate-90 transition-transform group-hover:translate-x-1 rtl:rotate-90 rtl:group-hover:-translate-x-1" />

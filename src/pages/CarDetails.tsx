@@ -60,6 +60,12 @@ export const CarDetails = () => {
     fetchData();
   }, [id]);
 
+  const carCurrency = car?.currency || settings?.currency || 'USD';
+  const carCurrencySymbol = carCurrency === 'MAD' ? 'DH' : 
+                          carCurrency === 'EUR' ? '€' : 
+                          carCurrency === 'AED' ? 'AED' :
+                          carCurrency === 'SAR' ? 'SR' : '$';
+
   const excludedDates = React.useMemo(() => {
     const dates: Date[] = [];
     
@@ -126,6 +132,7 @@ export const CarDetails = () => {
       pickupDate: format(formData.pickupDate, 'yyyy-MM-dd'),
       returnDate: format(formData.returnDate, 'yyyy-MM-dd'),
       totalPrice: car.pricePerDay * (diffDays || 1),
+      currency: carCurrency,
       status: 'Pending' as const
     };
 
@@ -138,7 +145,7 @@ export const CarDetails = () => {
           carData: { 
             brand: car.brand, 
             name: car.name, 
-            currency: settings?.currency 
+            currency: carCurrency 
           } 
         } 
       });
@@ -149,8 +156,7 @@ export const CarDetails = () => {
 
 
   const handleWhatsAppBooking = () => {
-    const currency = settings?.currency || 'USD';
-    const message = `Hello, I want to book ${car.brand} ${car.name} in ${formData.city}. Price: ${car.pricePerDay} ${currency}/day.`;
+    const message = `Hello, I want to book ${car.brand} ${car.name} in ${formData.city}. Price: ${car.pricePerDay} ${carCurrency}/day.`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${settings?.whatsapp || '1234567890'}?text=${encodedMessage}`, '_blank');
   };
@@ -258,17 +264,15 @@ export const CarDetails = () => {
                 <div className="relative z-10">
                   <p className="text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground">{t('carDetails.rentalPrice')}</p>
                   <div className="mt-4 flex items-baseline gap-3 text-primary">
-                    {settings?.currency === 'MAD' ? (
+                    {carCurrency === 'MAD' || carCurrency === 'AED' || carCurrency === 'SAR' ? (
                       <>
                         <span className="serif text-6xl font-black tracking-tighter">{car.pricePerDay}</span>
-                        <span className="text-2xl font-black tracking-tighter">DH</span>
+                        <span className="text-2xl font-black tracking-tighter">{carCurrencySymbol}</span>
                       </>
                     ) : (
                       <>
                         <span className="serif text-6xl font-black tracking-tighter">
-                          {settings?.currency === 'EUR' ? '€' : 
-                           settings?.currency === 'AED' ? 'AED' :
-                           settings?.currency === 'SAR' ? 'SR' : '$'}
+                          {carCurrencySymbol}
                           {car.pricePerDay}
                         </span>
                       </>

@@ -63,6 +63,7 @@
         "logo": { "type": "string" },
         "favicon": { "type": "string" },
         "heroImage": { "type": "string" },
+        "heroImageMobile": { "type": "string" },
         "ctaImage": { "type": "string" },
         "experienceImage": { "type": "string" },
         "currency": { "type": "string" },

@@ -8,9 +8,12 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { useSettings } from '../context/SettingsContext';
 
 export const AdminCars = () => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
   const [cars, setCars] = React.useState<Car[]>([]);
   const [cities, setCities] = React.useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -33,6 +36,7 @@ export const AdminCars = () => {
     doors: 4,
     airConditioning: true,
     images: [],
+    currency: settings?.currency || 'USD',
   });
 
   React.useEffect(() => {
@@ -86,9 +90,10 @@ export const AdminCars = () => {
         doors: 4,
         airConditioning: true,
         images: [],
+        currency: settings?.currency || 'USD',
       });
     }
-  }, [editingCar, isModalOpen]);
+  }, [editingCar, isModalOpen, settings?.currency]);
 
   const [newImageUrl, setNewImageUrl] = React.useState('');
 
@@ -218,16 +223,19 @@ export const AdminCars = () => {
           <h1 className="serif text-2xl font-light tracking-tight text-foreground">{t('admin.fleet.title')}</h1>
           <p className="text-foreground/60 text-sm font-light">{t('admin.fleet.subtitle')}</p>
         </div>
-        <button
-          onClick={() => {
-            setEditingCar(null);
-            setIsModalOpen(true);
-          }}
-          className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 active:scale-95"
-        >
-          <Plus size={18} />
-          {t('admin.fleet.addNew')}
-        </button>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <button
+            onClick={() => {
+              setEditingCar(null);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 active:scale-95"
+          >
+            <Plus size={18} />
+            {t('admin.fleet.addNew')}
+          </button>
+        </div>
       </div>
 
       <div className="rounded-3xl border border-primary/10 bg-white shadow-sm overflow-hidden">
@@ -267,7 +275,18 @@ export const AdminCars = () => {
                       {car.cities.join(', ')}
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-bold text-foreground">${car.pricePerDay}</td>
+                  <td className="px-6 py-4 font-bold text-foreground">
+                    {(() => {
+                      const currency = car.currency || settings?.currency || 'USD';
+                      const symbol = currency === 'MAD' ? 'DH' : 
+                                    currency === 'AED' ? 'AED' : 
+                                    currency === 'SAR' ? 'SR' : 
+                                    currency === 'EUR' ? '€' : '$';
+                      return currency === 'MAD' || currency === 'AED' || currency === 'SAR' 
+                        ? `${car.pricePerDay} ${symbol}` 
+                        : `${symbol}${car.pricePerDay}`;
+                    })()}
+                  </td>
                   <td className="px-6 py-4">
                     <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
                       {t(`admin.fleet.options.types.${car.type.toLowerCase()}`)}
@@ -281,7 +300,7 @@ export const AdminCars = () => {
                       }}
                       className="flex items-center gap-1 rounded-lg bg-primary/5 px-3 py-1.5 text-xs font-bold text-primary transition-all hover:bg-primary hover:text-primary-foreground"
                     >
-                      <CalendarIcon size={14} />
+                      <CalendarIcon size={14} className="text-green-600 group-hover:text-primary-foreground" />
                       {t('admin.fleet.manage')}
                     </button>
                   </td>
@@ -292,13 +311,13 @@ export const AdminCars = () => {
                           setEditingCar(car);
                           setIsModalOpen(true);
                         }}
-                        className="rounded-lg p-2 text-foreground/30 hover:bg-primary/10 hover:text-primary transition-all"
+                        className="rounded-lg p-2 text-primary hover:bg-primary/10 transition-all"
                       >
                         <Edit size={18} />
                       </button>
                       <button 
                         onClick={() => handleDelete(car)}
-                        className="rounded-lg p-2 text-foreground/30 hover:bg-emerald-50 hover:text-emerald-600 transition-all"
+                        className="rounded-lg p-2 text-primary hover:bg-primary/10 transition-all"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -363,6 +382,20 @@ export const AdminCars = () => {
                     value={formData.pricePerDay}
                     onChange={(e) => setFormData({ ...formData, pricePerDay: Number(e.target.value) })}
                   />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.fleet.currency')}</label>
+                  <select 
+                    className="w-full rounded-xl border border-primary/10 bg-primary/5 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 text-foreground appearance-none"
+                    value={formData.currency}
+                    onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                  >
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="EUR">Euro (€)</option>
+                    <option value="MAD">Moroccan Dirham (DH)</option>
+                    <option value="AED">UAE Dirham (AED)</option>
+                    <option value="SAR">Saudi Riyal (SR)</option>
+                  </select>
                 </div>
                 <div className="col-span-2 space-y-2">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{t('admin.fleet.availableInCities')}</label>
@@ -584,7 +617,7 @@ export const AdminCars = () => {
                       <button
                         onClick={() => updateAvailabilityStatus(true)}
                         disabled={isUpdatingAvailability}
-                        className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-50 py-3 text-xs font-bold text-emerald-600 transition-all hover:bg-emerald-100 disabled:opacity-50"
+                        className="flex items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/10 py-3 text-xs font-bold text-primary transition-all hover:bg-primary/20 disabled:opacity-50"
                       >
                         <CheckCircle size={14} />
                         {t('admin.fleet.available')}
@@ -626,7 +659,7 @@ export const AdminCars = () => {
                           <button
                             onClick={() => removeBlockedDate(dateStr)}
                             disabled={isUpdatingAvailability}
-                            className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 transition-all disabled:opacity-50"
+                            className="rounded-lg p-1.5 text-primary hover:bg-primary/10 transition-all disabled:opacity-50"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -674,7 +707,7 @@ export const AdminCars = () => {
         }
         /* Default state for all valid days is Green (Available) */
         .availability-picker-container .react-datepicker__day:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month) {
-          background-color: #10b981 !important;
+          background-color: #22c55e !important;
           color: white !important;
           border-radius: 50% !important;
         }
@@ -698,7 +731,7 @@ export const AdminCars = () => {
         }
 
         .availability-picker-container .react-datepicker__day--selected:not(.blocked-date) {
-          background-color: #10b981 !important;
+          background-color: #22c55e !important;
         }
         .availability-picker-container .react-datepicker__day:hover {
           transform: scale(1.1);
@@ -727,7 +760,7 @@ export const AdminCars = () => {
                 </button>
                 <button
                   onClick={confirmDelete}
-                  className="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-all hover:bg-emerald-700 active:scale-95"
+                  className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-95"
                 >
                   {t('admin.fleet.delete')}
                 </button>

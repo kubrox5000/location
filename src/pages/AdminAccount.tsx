@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { User, Mail, Key, Shield, Loader2, Save, AlertCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { adminService } from '../services/api';
@@ -91,9 +92,12 @@ export const AdminAccount = () => {
 
   return (
     <div className="mx-auto max-w-4xl p-6">
-      <div className="mb-8">
-        <h1 className="serif text-3xl font-light text-foreground">{t('admin.account.title')}</h1>
-        <p className="mt-2 text-sm text-foreground/50">{t('admin.account.subtitle')}</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="serif text-3xl font-light text-foreground">{t('admin.account.title')}</h1>
+          <p className="mt-2 text-sm text-foreground/50">{t('admin.account.subtitle')}</p>
+        </div>
+        <LanguageSwitcher />
       </div>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">

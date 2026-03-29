@@ -58,6 +58,7 @@ service cloud.firestore {
     //   - logo: string (optional)
     //   - favicon: string (optional)
     //   - heroImage: string (optional)
+    //   - heroImageMobile: string (optional)
     //   - ctaImage: string (optional)
     //   - experienceImage: string (optional)
     //   - currency: string (optional)
@@ -124,7 +125,7 @@ service cloud.firestore {
     }
 
     function isValidCar(data) {
-      return hasOnlyAllowedFields(['name', 'brand', 'pricePerDay', 'cities', 'type', 'transmission', 'fuelType', 'seats', 'doors', 'airConditioning', 'availability', 'createdAt', 'images', 'id']) &&
+      return hasOnlyAllowedFields(['name', 'brand', 'pricePerDay', 'cities', 'type', 'transmission', 'fuelType', 'seats', 'doors', 'airConditioning', 'availability', 'createdAt', 'images', 'id', 'currency']) &&
         data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
         data.brand is string && data.brand.size() >= 1 && data.brand.size() <= 50 &&
         data.pricePerDay is number && data.pricePerDay > 0 &&
@@ -132,11 +133,16 @@ service cloud.firestore {
         data.type in ['SUV', 'Sedan', 'Economy', 'Luxury'] &&
         data.transmission in ['Automatic', 'Manual'] &&
         data.fuelType in ['Petrol', 'Diesel', 'Electric', 'Hybrid'] &&
-        isValidDateString(data.createdAt);
+        isValidDateString(data.createdAt) &&
+        (!('images' in data) || (data.images is list && data.images.size() <= 20)) &&
+        (!('currency' in data) || (data.currency is string && data.currency.size() <= 10)) &&
+        (!('seats' in data) || (data.seats is number && data.seats > 0)) &&
+        (!('doors' in data) || (data.doors is number && data.doors > 0)) &&
+        (!('airConditioning' in data) || data.airConditioning is bool);
     }
 
     function isValidBooking(data) {
-      return hasOnlyAllowedFields(['carId', 'customerName', 'phone', 'city', 'pickupDate', 'returnDate', 'status', 'totalPrice', 'createdAt', 'id']) &&
+      return hasOnlyAllowedFields(['carId', 'customerName', 'phone', 'city', 'pickupDate', 'returnDate', 'status', 'totalPrice', 'createdAt', 'id', 'currency']) &&
         data.carId is string &&
         data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 100 &&
         data.phone is string && data.phone.size() >= 5 && data.phone.size() <= 20 &&
@@ -145,7 +151,8 @@ service cloud.firestore {
         isValidDateString(data.returnDate) &&
         data.status in ['Pending', 'Confirmed', 'Cancelled'] &&
         data.totalPrice is number && data.totalPrice > 0 &&
-        isValidDateString(data.createdAt);
+        isValidDateString(data.createdAt) &&
+        (!('currency' in data) || (data.currency is string && data.currency.size() <= 10));
     }
 
     function isValidCity(data) {
@@ -154,7 +161,7 @@ service cloud.firestore {
     }
 
     function isValidSettings(data) {
-      return hasOnlyAllowedFields(['email', 'phone', 'whatsapp', 'address', 'addressAr', 'logo', 'favicon', 'currency', 'updatedAt', 'id', 'facebook', 'twitter', 'instagram', 'linkedin', 'heroImage', 'ctaImage', 'experienceImage']) &&
+      return hasOnlyAllowedFields(['email', 'phone', 'whatsapp', 'address', 'addressAr', 'logo', 'favicon', 'currency', 'updatedAt', 'id', 'facebook', 'twitter', 'instagram', 'linkedin', 'heroImage', 'heroImageMobile', 'ctaImage', 'experienceImage']) &&
         (!('email' in data) || (isValidEmail(data.email) && data.email.size() <= 255)) &&
         (!('phone' in data) || (data.phone is string && data.phone.size() <= 50)) &&
         (!('whatsapp' in data) || (data.whatsapp is string && data.whatsapp.size() <= 50)) &&
@@ -163,6 +170,7 @@ service cloud.firestore {
         (!('logo' in data) || (data.logo is string && data.logo.size() <= 1000)) &&
         (!('favicon' in data) || (data.favicon is string && data.favicon.size() <= 1000)) &&
         (!('heroImage' in data) || (data.heroImage is string && data.heroImage.size() <= 1000)) &&
+        (!('heroImageMobile' in data) || (data.heroImageMobile is string && data.heroImageMobile.size() <= 1000)) &&
         (!('ctaImage' in data) || (data.ctaImage is string && data.ctaImage.size() <= 1000)) &&
         (!('experienceImage' in data) || (data.experienceImage is string && data.experienceImage.size() <= 1000)) &&
         (!('currency' in data) || (data.currency is string && data.currency.size() <= 10)) &&

@@ -4,6 +4,7 @@ import { carService, bookingService } from '../services/api';
 import { CheckCircle, XCircle, MapPin, Car as CarIcon, Calendar, Search, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format, isWithinInterval, parseISO, startOfDay, addDays } from 'date-fns';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const AdminAvailableCars = () => {
   const [cars, setCars] = React.useState<Car[]>([]);
@@ -80,8 +81,9 @@ export const AdminAvailableCars = () => {
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
+          <LanguageSwitcher />
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary" size={18} />
             <input
               type="text"
               placeholder="Search available cars..."
@@ -91,7 +93,7 @@ export const AdminAvailableCars = () => {
             />
           </div>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30" size={18} />
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-green-600" size={18} />
             <input
               type="date"
               className="rounded-xl border border-primary/10 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
@@ -125,7 +127,7 @@ export const AdminAvailableCars = () => {
                   <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{car.brand}</span>
                   <h3 className="serif text-lg font-light text-foreground">{car.name}</h3>
                 </div>
-                <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+                <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
                   <CheckCircle size={12} />
                   Available
                 </div>
@@ -133,11 +135,11 @@ export const AdminAvailableCars = () => {
 
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2 text-sm text-foreground/60 font-light">
-                  <CarIcon size={16} className="text-foreground/30" />
+                  <CarIcon size={16} className="text-primary" />
                   {car.type}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-foreground/60 font-light">
-                  <MapPin size={16} className="text-foreground/30" />
+                  <MapPin size={16} className="text-primary" />
                   {car.cities.length} Cities
                 </div>
               </div>
@@ -160,7 +162,7 @@ export const AdminAvailableCars = () => {
 
         {availableCars.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-primary/10 p-20 text-center">
-            <div className="rounded-full bg-primary/5 p-4 text-foreground/30">
+            <div className="rounded-full bg-primary/5 p-4 text-primary">
               <XCircle size={48} />
             </div>
             <h3 className="mt-4 serif text-lg font-light text-foreground">No Cars Available</h3>

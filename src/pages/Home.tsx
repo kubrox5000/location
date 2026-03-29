@@ -128,18 +128,25 @@ export const Home = () => {
   return (
     <div className="flex flex-col bg-background">
       {/* Hero Section - Editorial Style */}
-      <section className="relative min-h-screen overflow-hidden bg-background">
+      <section className="relative min-h-screen overflow-hidden bg-black">
         <div className="absolute inset-0 z-0">
-          <motion.img
-            initial={{ scale: 1.1, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 2, ease: "easeOut" }}
-            src={settings?.heroImage || "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=2000"}
-            alt="Hero Background"
-            className="h-full w-full object-cover object-center"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-black/10" />
+          <motion.picture
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+          >
+            {settings?.heroImageMobile && (
+              <source media="(max-width: 768px)" srcSet={settings.heroImageMobile} />
+            )}
+            <img
+              src={settings?.heroImage || "https://images.unsplash.com/photo-1542362567-b055002b91f4?auto=format&fit=crop&q=100&w=3840"}
+              alt="Hero Background"
+              className="h-full w-full object-cover object-center hd-image"
+              referrerPolicy="no-referrer"
+              loading="eager"
+            />
+          </motion.picture>
+          <div className="absolute inset-0 bg-black/5" />
         </div>
 
         <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-20 text-center text-foreground">
@@ -158,9 +165,6 @@ export const Home = () => {
               {t('home.hero.tag')}
             </motion.span>
             <h1 className="serif text-5xl font-black leading-[0.9] text-foreground sm:hidden tracking-tighter mb-4">
-              {t('home.hero.title')}
-            </h1>
-            <h1 className="serif hidden sm:block font-black leading-[0.9] text-foreground sm:text-7xl md:text-8xl lg:text-9xl xl:text-[12rem] tracking-tighter">
               {t('home.hero.title')}
             </h1>
             <p className="mx-auto mt-10 max-w-2xl text-xl font-light leading-relaxed text-foreground/50 tracking-wide">
@@ -199,7 +203,7 @@ export const Home = () => {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-[3rem] glass p-3 shadow-2xl shadow-black/5 border border-black/5"
+            className="rounded-[3rem] bg-white sm:glass p-3 shadow-2xl shadow-black/5 border border-black/5"
           >
             <SearchForm onSearch={handleSearch} />
           </motion.div>
@@ -219,7 +223,7 @@ export const Home = () => {
               { name: 'Audi', color: 'text-red-600' },
               { name: 'Porsche', color: 'text-amber-600' },
               { name: 'Tesla', color: 'text-red-700' },
-              { name: 'Range Rover', color: 'text-emerald-800' }
+              { name: 'Range Rover', color: 'text-primary' }
             ].map((brand) => (
               <span 
                 key={brand.name} 
